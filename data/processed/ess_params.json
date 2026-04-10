@@ -1,0 +1,11 @@
+{
+  "energy_capacity_kwh": 1200.0,
+  "p_charge_max_kw": 300.0,
+  "p_discharge_max_kw": 300.0,
+  "eta_charge": 0.95,
+  "eta_discharge": 0.95,
+  "soc_init_kwh": 600.0,
+  "delta_t_hours": 0.25,
+  "soc_min_frac": 0.1,
+  "soc_max_frac": 0.9
+}

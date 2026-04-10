@@ -1,0 +1,2 @@
+﻿event_id,start_time,end_time,pressure_type,margin_min_kw,margin_mean_kw,deficit_max_kw,deficit_duration_h,ev_online_mean,ev_ch_max_mean_kw,ev_dis_max_mean_kw
+stress_event_3,2025-07-18 17:00:00,2025-07-18 19:00:00,晚高峰叠加受限压力,106.69999999999993,180.25555555555553,0.0,0.0,7.777777777777778,66.88888888888889,53.0

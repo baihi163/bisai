@@ -1,0 +1,2 @@
+﻿event_id,start_time,end_time,pressure_type,pressure_max_kw,pressure_avg_kw,pressure_positive_duration_h,load_mean_kw,pv_mean_kw,grid_limit_mean_kw,price_buy_mean,carbon_mean,ev_online_mean
+stress_event_2,2025-07-17 13:00:00,2025-07-17 16:00:00,外部供电受限压力,-140.49999999999994,-289.3538461538461,0.0,714.9846153846154,312.03076923076924,692.3076923076923,0.7338461538461539,0.6126923076923078,19.384615384615383
