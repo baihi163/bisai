@@ -216,21 +216,24 @@ def main() -> None:
         load_df["office_building_kw"],
         label=tr("Office"),
         lw=2.0,
-        color=PALETTE["teal"],
+        color="#6FAFA6",
+        alpha=0.88,
     )
     plt.plot(
         load_df["timestamp"],
         load_df["wet_lab_kw"],
         label=tr("Wet Lab"),
         lw=2.0,
-        color=PALETTE["orange"],
+        color="#E59A7A",
+        alpha=0.88,
     )
     plt.plot(
         load_df["timestamp"],
         load_df["teaching_center_kw"],
         label=tr("Teaching Center"),
         lw=2.0,
-        color=PALETTE["purple"],
+        color="#8B7C9E",
+        alpha=0.88,
     )
     plt.legend(loc="upper right", ncol=3)
     load_building_fig = save_fig(
@@ -440,14 +443,16 @@ def main() -> None:
         ev_agg_df["e_ev_init_inflow_kwh"],
         label=tr("Initial Energy Inflow"),
         lw=2.0,
-        color=PALETTE["green"],
+        color="#72B08C",
+        alpha=0.88,
     )
     plt.plot(
         ev_agg_df["timestamp"],
         ev_agg_df["e_ev_req_outflow_kwh"],
         label=tr("Required Departure Outflow"),
         lw=1.8,
-        color=PALETTE["purple"],
+        color="#8D7AA8",
+        alpha=0.88,
     )
     plt.legend(loc="upper right")
     ev_energy_fig = save_fig(

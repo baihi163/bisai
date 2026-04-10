@@ -232,7 +232,6 @@ def main() -> None:
         if st["fill"] > 0:
             ax.fill_between(d["hour"], d["pv_available_kw"], color=st["color"], alpha=st["fill"], zorder=1)
     ax.axvspan(11, 14, color="#f2dfc7", alpha=0.35)
-    ax.text(11.15, ax.get_ylim()[1] * 0.94, tr("Storm-cloud window"), fontsize=9, color="#7b5a2e")
     ax.set_xlim(0, 24)
     ax.set_xticks(range(0, 25, 3))
     ax.set_xlabel(tr("Hour of Day"))
@@ -240,6 +239,41 @@ def main() -> None:
     ax.set_title(tr("Typical-Day PV Profiles: Noon Support Loss on 2025-07-16"), pad=10)
     style_axes(ax)
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.16), ncol=3)
+
+    # Paper-style lightweight annotations (3-4 only), keep uncluttered.
+    pv_max_normal = df[df["date"] == day_tags["normal_day"]]["pv_available_kw"].max()
+    pv_min_low_window = df[
+        (df["date"] == day_tags["low_irradiance_day"]) & (df["hour"] >= 11) & (df["hour"] <= 14)
+    ]["pv_available_kw"].min()
+    pv_import_mid = df[
+        (df["date"] == day_tags["import_limited_day"]) & (df["hour"] >= 12) & (df["hour"] <= 13)
+    ]["pv_available_kw"].mean()
+
+    anno_style = dict(
+        arrowprops=dict(arrowstyle="->", lw=0.8, color="#666a73", shrinkA=2, shrinkB=2),
+        fontsize=9,
+        color="#555b65",
+    )
+    # Keep only 3 primary annotations for clean paper-style layout.
+    ax.annotate(
+        "低辐照日：中午出力明显下滑",
+        xy=(12.15, pv_min_low_window),
+        xytext=(6.0, pv_max_normal * 0.56),
+        **anno_style,
+    )
+    ax.annotate(
+        "正常日：中午峰值较高",
+        xy=(12.4, pv_max_normal),
+        xytext=(17.3, pv_max_normal * 0.94),
+        **anno_style,
+    )
+    ax.annotate(
+        "暴云扰动时段（11:00–14:00）",
+        xy=(12.5, ax.get_ylim()[1] * 0.86),
+        xytext=(12.5, ax.get_ylim()[1] * 0.91),
+        ha="center",
+        **anno_style,
+    )
     typical_pv_fig = output_path(FIG_DIR, zh_fig_name("typical_day_pv_comparison.png"))
     fig.savefig(typical_pv_fig, dpi=300)
     plt.close(fig)

@@ -1,0 +1,4 @@
+load_block,mapping_to_timeseries_component,mapping_confidence,relation_to_total_native_load
+office_building,对应 timeseries_15min.csv 中的 office_building_kw（办公楼分项负荷）；柔性参数描述该分项的可转移/可削减能力。,由 load_block 命名与原始数据列名一致，可唯一对应办公楼分项。,total_native_load_kw 为各分项之和（见 timeseries），flexible_load 各块分别绑定对应分项，而非单独占用总负荷列。
+wet_lab,对应 timeseries_15min.csv 中的 wet_lab_kw（湿实验楼分项负荷）。,由 load_block 命名与原始数据列名一致，可唯一对应湿实验楼分项。,total_native_load_kw 为各分项之和（见 timeseries），flexible_load 各块分别绑定对应分项，而非单独占用总负荷列。
+teaching_center,对应 timeseries_15min.csv 中的 teaching_center_kw（教学中心分项负荷）。,由 load_block 命名与原始数据列名一致，可唯一对应教学中心分项。,total_native_load_kw 为各分项之和（见 timeseries），flexible_load 各块分别绑定对应分项，而非单独占用总负荷列。
