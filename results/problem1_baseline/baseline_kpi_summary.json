@@ -1,12 +1,21 @@
 {
-  "total_grid_import_kwh": 63591.1,
+  "total_grid_import_kwh": 63760.2652,
   "total_grid_export_kwh": 0.0,
   "total_pv_curtailed_kwh": 0.0,
-  "total_cost_cny": 45976.4035,
+  "total_cost_cny": 46304.5273,
   "pv_utilization_rate": 1.0,
-  "ev_demand_met_rate": 0.990196,
+  "ev_demand_met_rate": 0.980392,
   "peak_grid_import_kw": 624.8,
   "total_unmet_load_kwh": 0.0,
   "ess_total_charge_throughput_kwh": 0.0,
-  "ess_total_discharge_throughput_kwh": 456.0
+  "ess_total_discharge_throughput_kwh": 456.0,
+  "total_ev_charge_kwh": 2164.0652,
+  "total_pv_used_locally_kwh": 22969.3,
+  "total_pv_to_ess_kwh": 0.0,
+  "total_sell_revenue_cny": 0.0,
+  "average_grid_import_kw": 379.5254,
+  "ess_min_energy_kwh": 120.0,
+  "ess_max_energy_kwh": 600.0,
+  "ev_average_completion_ratio": 0.995408,
+  "unmet_load_slots_count": 0
 }
