@@ -24,7 +24,7 @@ I18N = {
     "CNY/kWh": "元/kWh",
     "kgCO2/kWh": "kgCO2/kWh",
     "Count": "数量",
-    "Energy (kWh)": "电量（kWh）",
+    "Energy (kWh)": "能量（kWh）",
     "Total Native Load (7 Days)": "总原生负荷时序（7天）",
     "Total Load": "总负荷",
     "4-Point Moving Average": "4点滑动平均",
@@ -51,9 +51,9 @@ I18N = {
     "EV Charging/Discharging Capability (7 Days)": "EV充放电能力（7天）",
     "Charge Bound (kW)": "充电边界（kW）",
     "Discharge Bound (kW)": "放电边界（kW）",
-    "Initial Energy Inflow": "初始电量流入",
-    "Required Departure Outflow": "离站需求流出",
-    "EV Energy Inflow/Outflow (7 Days)": "EV能量流入/流出（7天）",
+    "Initial Energy Inflow": "EV 初始流入能量 (kWh)",
+    "Required Departure Outflow": "EV 需求流出能量 (kWh)",
+    "EV Energy Inflow/Outflow (7 Days)": "EV 能量流入/流出 (7天)",
 }
 
 
@@ -264,25 +264,27 @@ def main() -> None:
         pv_df[["timestamp", "pv_available_kw"]], on="timestamp", how="inner"
     )
     plt.figure(figsize=FIGSIZE)
+    c_load = "#BEBAB9"
+    c_pv = "#C47070"
     plt.plot(
         lp["timestamp"],
         lp["total_native_load_kw"],
         label=tr("Total Load"),
         lw=2.6,
-        color=PALETTE["navy"],
+        color=c_load,
     )
     plt.plot(
         lp["timestamp"],
         lp["pv_available_kw"],
         label=tr("PV Available"),
         lw=2.2,
-        color=PALETTE["gold"],
+        color=c_pv,
     )
     plt.fill_between(
         lp["timestamp"],
         lp["pv_available_kw"],
-        color=PALETTE["gold"],
-        alpha=0.12,
+        color=c_pv,
+        alpha=0.18,
     )
     plt.legend(loc="upper right")
     pv_load_fig = save_fig(zh_fig_name("pv_vs_load_7d.png"), tr("PV vs Total Load (7 Days)"), ylabel=tr("Power (kW)"))
@@ -299,26 +301,41 @@ def main() -> None:
     x = lp["timestamp"]
     load_y = lp["total_native_load_kw"]
     pv_y = lp["pv_available_kw"]
-    ax1.fill_between(x, load_y, color=PALETTE["navy"], alpha=0.08, zorder=1)
-    ax1.plot(x, load_y, lw=2.5, color="#16324f", label=tr("Total Load"), zorder=3)
-    ax1.fill_between(x, pv_y, color=PALETTE["gold"], alpha=0.30, zorder=2)
-    ax1.plot(x, pv_y, lw=1.9, color="#c5852f", label=tr("PV Available"), zorder=4)
+    c_load = "#BEBAB9"
+    c_pv = "#C47070"
+    ax1.fill_between(x, load_y, color=c_load, alpha=0.14, zorder=1)
+    ax1.plot(x, load_y, lw=2.5, color=c_load, label=tr("Total Load"), zorder=3)
+    ax1.fill_between(x, pv_y, color=c_pv, alpha=0.30, zorder=2)
+    ax1.plot(x, pv_y, lw=1.9, color=c_pv, label=tr("PV Available"), zorder=4)
     ax1.set_title(tr("PV and Load Coupling (7-Day Overview)"), pad=10)
     ax1.set_ylabel(tr("Power (kW)"))
     _style_time_axis_paper(ax1)
-    ax1.legend(loc="upper center", bbox_to_anchor=(0.5, 1.17), ncol=2)
+    ax1.legend(loc="upper right", framealpha=0.92)
 
     # Typical day: day with max PV peak
     lp_tmp = lp.copy()
     lp_tmp["date"] = lp_tmp["timestamp"].dt.date
     peak_day = lp_tmp.groupby("date")["pv_available_kw"].max().idxmax()
     day_df = lp_tmp[lp_tmp["date"] == peak_day]
-    ax2.fill_between(day_df["timestamp"], day_df["pv_available_kw"], color=PALETTE["gold"], alpha=0.35)
-    ax2.plot(day_df["timestamp"], day_df["total_native_load_kw"], lw=2.1, color="#16324f")
-    ax2.plot(day_df["timestamp"], day_df["pv_available_kw"], lw=1.8, color="#c5852f")
+    ax2.fill_between(day_df["timestamp"], day_df["pv_available_kw"], color=c_pv, alpha=0.35)
+    ax2.plot(
+        day_df["timestamp"],
+        day_df["total_native_load_kw"],
+        lw=2.1,
+        color=c_load,
+        label=tr("Total Load"),
+    )
+    ax2.plot(
+        day_df["timestamp"],
+        day_df["pv_available_kw"],
+        lw=1.8,
+        color=c_pv,
+        label=tr("PV Available"),
+    )
     ax2.set_title(f"{tr('Typical Day Detail')}（{peak_day}）", pad=8)
     ax2.set_ylabel(tr("Power (kW)"))
     _style_time_axis_paper(ax2)
+    ax2.legend(loc="upper right", framealpha=0.92)
     ax2.xaxis.set_major_locator(mdates.HourLocator(interval=3))
     ax2.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
     pv_load_paper = output_path(FIG_DIR, zh_fig_name("pv_vs_load_7d_paper.png"))
@@ -443,16 +460,16 @@ def main() -> None:
         ev_agg_df["e_ev_init_inflow_kwh"],
         label=tr("Initial Energy Inflow"),
         lw=2.0,
-        color="#72B08C",
-        alpha=0.88,
+        color="#91CAE8",
+        alpha=0.95,
     )
     plt.plot(
         ev_agg_df["timestamp"],
         ev_agg_df["e_ev_req_outflow_kwh"],
         label=tr("Required Departure Outflow"),
         lw=1.8,
-        color="#8D7AA8",
-        alpha=0.88,
+        color="#F48892",
+        alpha=0.95,
     )
     plt.legend(loc="upper right")
     ev_energy_fig = save_fig(

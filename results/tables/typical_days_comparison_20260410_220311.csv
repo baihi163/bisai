@@ -1,0 +1,4 @@
+﻿day_type,date,load_peak_kw,load_energy_kwh,pv_peak_kw,pv_energy_kwh,grid_limit_min_kw,buy_price_mean,carbon_mean,pressure_max_kw
+normal_day,2025-07-15,769.0,13086.224999999999,474.3,3696.575,1200.0,0.7325,0.66,-602.2
+low_irradiance_day,2025-07-16,744.0,12865.3,272.6,1891.4499999999998,1200.0,0.7325,0.66,-575.1999999999999
+import_limited_day,2025-07-17,755.7,12979.650000000001,442.0,3308.7749999999996,650.0,0.7325,0.66,-140.49999999999994

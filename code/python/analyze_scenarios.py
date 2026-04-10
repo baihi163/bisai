@@ -6,6 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
 
@@ -240,39 +241,48 @@ def main() -> None:
     style_axes(ax)
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.16), ncol=3)
 
-    # Paper-style lightweight annotations (3-4 only), keep uncluttered.
-    pv_max_normal = df[df["date"] == day_tags["normal_day"]]["pv_available_kw"].max()
-    pv_min_low_window = df[
-        (df["date"] == day_tags["low_irradiance_day"]) & (df["hour"] >= 11) & (df["hour"] <= 14)
-    ]["pv_available_kw"].min()
-    pv_import_mid = df[
-        (df["date"] == day_tags["import_limited_day"]) & (df["hour"] >= 12) & (df["hour"] <= 13)
-    ]["pv_available_kw"].mean()
-
-    anno_style = dict(
-        arrowprops=dict(arrowstyle="->", lw=0.8, color="#666a73", shrinkA=2, shrinkB=2),
+    anno_base = dict(
+        arrowprops=dict(arrowstyle="->", lw=0.8, color="#666a73", shrinkA=3, shrinkB=3),
         fontsize=9,
         color="#555b65",
     )
-    # Keep only 3 primary annotations for clean paper-style layout.
-    ax.annotate(
-        "低辐照日：中午出力明显下滑",
-        xy=(12.15, pv_min_low_window),
-        xytext=(6.0, pv_max_normal * 0.56),
-        **anno_style,
-    )
+    # 三条标注共用同一箭头向量 V（等长、互相平行）：箭头由 xytext 指向 xy，且 xy - xytext = V。
+    dn = df[df["date"] == day_tags["normal_day"]].sort_values("hour")
+    dl = df[df["date"] == day_tags["low_irradiance_day"]].sort_values("hour")
+    x_a = 12.32
+    y_n = float(np.interp(x_a, dn["hour"].to_numpy(), dn["pv_available_kw"].to_numpy()))
+    y_l = float(np.interp(x_a, dl["hour"].to_numpy(), dl["pv_available_kw"].to_numpy()))
+    V = np.array([-5.15, -40.0], dtype=float)
+    xy_normal = np.array([x_a, y_n], dtype=float)
+    xy_low = np.array([x_a, y_l], dtype=float)
+    y_top = ax.get_ylim()[1]
+    xy_storm = np.array([12.5, y_top * 0.86], dtype=float)
+    txt_normal = tuple(xy_normal - V)
+    txt_low = tuple(xy_low - V)
+    txt_storm = tuple(xy_storm - V)
     ax.annotate(
         "正常日：中午峰值较高",
-        xy=(12.4, pv_max_normal),
-        xytext=(17.3, pv_max_normal * 0.94),
-        **anno_style,
+        xy=tuple(xy_normal),
+        xytext=txt_normal,
+        ha="left",
+        va="center",
+        **anno_base,
+    )
+    ax.annotate(
+        "低辐照日：中午出力明显下滑",
+        xy=tuple(xy_low),
+        xytext=txt_low,
+        ha="left",
+        va="center",
+        **anno_base,
     )
     ax.annotate(
         "暴云扰动时段（11:00–14:00）",
-        xy=(12.5, ax.get_ylim()[1] * 0.86),
-        xytext=(12.5, ax.get_ylim()[1] * 0.91),
-        ha="center",
-        **anno_style,
+        xy=tuple(xy_storm),
+        xytext=txt_storm,
+        ha="left",
+        va="center",
+        **anno_base,
     )
     typical_pv_fig = output_path(FIG_DIR, zh_fig_name("typical_day_pv_comparison.png"))
     fig.savefig(typical_pv_fig, dpi=300)
