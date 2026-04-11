@@ -1,0 +1,12 @@
+﻿analysis,perturbation,param_name,param_value,solver_status,objective_pulp,objective_recomputed,grid_import_energy_kwh,peak_P_buy_kw,pv_curtail_energy_kwh,ess_charge_energy_kwh,ess_discharge_energy_kwh
+sensitivity_oneway,nominal,baseline_nominal,1.0,Optimal,6658.484327232787,6658.484327232775,9711.3301325,895.2,0.0,1010.5263150000001,912.0
+sensitivity_oneway,buy_price_scale,buy_price_multiplier,0.95,Optimal,6330.7093321115335,6330.709332111525,9709.198335000001,895.2,0.0,1010.5263150000001,912.0
+sensitivity_oneway,buy_price_scale,buy_price_multiplier,1.05,Optimal,6986.224149269037,6986.2241492690255,9711.3301325,895.2,0.0,1010.5263150000001,912.0
+sensitivity_oneway,carbon_price,carbon_price_cny_per_kwh_co2,0.05,Optimal,6658.484327232787,6658.484327232775,9711.3301325,895.2,0.0,1010.5263150000001,912.0
+sensitivity_oneway,carbon_price,carbon_price_cny_per_kwh_co2,0.12,Optimal,6658.484327232787,6658.484327232775,9711.3301325,895.2,0.0,1010.5263150000001,912.0
+sensitivity_oneway,penalty_curtail,penalty_curtail_per_kwh,0.35,Optimal,6658.484327232784,6658.484327232775,9711.3301325,895.2,0.0,1010.5263150000001,912.0
+sensitivity_oneway,penalty_curtail,penalty_curtail_per_kwh,0.75,Optimal,6658.484327232788,6658.484327232775,9711.3301325,895.2,0.0,1010.5263150000001,912.0
+sensitivity_oneway,penalty_shift,penalty_shift_linear_cny_per_kw,0.01,Optimal,6644.420646382797,6644.420646382773,9720.405407499999,895.2,0.0,1010.5263150000001,912.0
+sensitivity_oneway,penalty_shift,penalty_shift_linear_cny_per_kw,0.04,Optimal,6677.05039723279,6677.050397232774,9705.298772499998,895.2,0.0,1010.5263150000001,912.0
+sensitivity_oneway,ess_degradation_scale,ess_degradation_multiplier,0.5,Optimal,6632.049590401536,6632.049590401525,9711.3301325,895.2,0.0,1010.5263150000001,912.0
+sensitivity_oneway,ess_degradation_scale,ess_degradation_multiplier,2.0,Optimal,6711.353800895286,6711.353800895275,9711.3301325,895.2,0.0,1010.5263150000001,912.0
