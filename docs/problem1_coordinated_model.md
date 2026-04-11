@@ -142,7 +142,7 @@ $$
 为增强公式可读性，本文将总目标函数写为分项成本之和：
 
 $$
-\min F = C^{grid} + C^{carbon} + C^{curt} + C^{deg,ess} + C^{flex} + C^{deg,ev}
+\min F = C_{\mathrm{grid}} + C_{\mathrm{CO2}} + C_{\mathrm{curt}} + C_{\mathrm{ess}}^{\mathrm{deg}} + C_{\mathrm{flex}} + C_{\mathrm{ev}}^{\mathrm{deg}}
 $$
 
 其中各分项定义如下。
@@ -150,7 +150,7 @@ $$
 #### （1）购售电净成本
 
 $$
-C^{grid} = \sum_{t=1}^{T}\left(c_t^{buy}P_t^{buy} - c_t^{sell}P_t^{sell}\right)\Delta t
+C_{\mathrm{grid}} = \sum_{t=1}^{T}\left(c_t^{buy}P_t^{buy} - c_t^{sell}P_t^{sell}\right)\Delta t
 $$
 
 该项反映园区从主电网购电的支出与向主电网售电的收益。
@@ -158,7 +158,7 @@ $$
 #### （2）碳排放成本
 
 $$
-C^{carbon} = \sum_{t=1}^{T} c^{CO_2}\gamma_t P_t^{buy}\Delta t
+C_{\mathrm{CO2}} = \sum_{t=1}^{T} c^{CO_2}\gamma_t P_t^{buy}\Delta t
 $$
 
 该项用于体现购电行为对应的碳排放经济代价。
@@ -166,7 +166,7 @@ $$
 #### （3）弃光惩罚成本
 
 $$
-C^{curt} = \sum_{t=1}^{T} c^{curt}\left(\bar P_t^{pv} - P_t^{pv,use}\right)\Delta t
+C_{\mathrm{curt}} = \sum_{t=1}^{T} c^{curt}\left(\bar P_t^{pv} - P_t^{\mathrm{pv}}\right)\Delta t
 $$
 
 该项用于惩罚可利用光伏未被消纳的情形，以鼓励提高新能源利用率。
@@ -174,7 +174,7 @@ $$
 #### （4）固定储能退化成本
 
 $$
-C^{deg,ess} = \sum_{t=1}^{T} c^{deg,ess}\frac{P_t^{ess,ch}+P_t^{ess,dis}}{2}\Delta t
+C_{\mathrm{ess}}^{\mathrm{deg}} = \sum_{t=1}^{T} c^{deg,ess}\frac{P_{t,\mathrm{ch}}^{\mathrm{ess}} + P_{t,\mathrm{dis}}^{\mathrm{ess}}}{2}\Delta t
 $$
 
 该项用于抑制固定储能的高频充放电行为。
@@ -182,11 +182,7 @@ $$
 #### （5）建筑柔性负荷调节成本
 
 $$
-C^{flex} =
-\sum_{b \in \mathcal{B}} \sum_{t=1}^{T}
-\left[
-c^{shift}(P_{b,t}^{shift}+P_{b,t}^{rec}) + c_b^{shed}P_{b,t}^{shed}
-\right]\Delta t
+C_{\mathrm{flex}} = \sum_{b \in \mathcal{B}} \sum_{t=1}^{T} \left[ c^{shift}(P_{b,t}^{shift}+P_{b,t}^{rec}) + c_b^{shed}P_{b,t}^{shed} \right]\Delta t
 $$
 
 该项包括建筑负荷平移、恢复以及削减带来的调节代价。
@@ -194,12 +190,11 @@ $$
 #### （6）EV 电池退化成本
 
 $$
-C^{deg,ev} =
-\sum_{i \in \mathcal{E}} \sum_{t \in \mathcal{T}_i}
-c_i^{deg,ev}\frac{P_{i,t}^{ev,ch}+P_{i,t}^{ev,dis}}{2}\Delta t
+C_{\mathrm{ev}}^{\mathrm{deg}} = \sum_{i \in \mathcal{E}} \sum_{t \in \mathcal{T}_i} c_i^{deg,ev}\frac{P_{i,t,\mathrm{ch}}^{\mathrm{ev}} + P_{i,t,\mathrm{dis}}^{\mathrm{ev}}}{2}\Delta t
 $$
 
 该项用于刻画 EV 参与调度所引起的电池寿命损耗成本，从而避免过度调用 EV 参与园区能量平衡。
+
 
 ### 4.2 目标函数各项含义
 
