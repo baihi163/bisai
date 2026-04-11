@@ -1,0 +1,14 @@
+﻿metric,value
+grid_import_cost,6553.491644525001
+grid_export_revenue,0.0
+carbon_cost,0.0
+pv_curtail_penalty,0.0
+building_shift_penalty,22.500691199999984
+recover_penalty_cost,0.0
+load_shed_penalty,0.0
+ess_degradation_cost,0.0
+ev_degradation_cost,0.0
+operation_cost,6575.992335725001
+objective_from_solver,6575.992335724995
+objective_recomputed,6575.992335725001
+objective_abs_gap,5.4569682106375694e-12
