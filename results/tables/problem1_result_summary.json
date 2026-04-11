@@ -1,0 +1,23 @@
+[
+  {
+    "model_name": "p1_coordinated",
+    "run_tag": "p1_ultimate_latest",
+    "objective_total": 39467.456089,
+    "operation_cost": 38973.219277,
+    "carbon_cost": 0.0,
+    "ess_degradation_cost": 369.390665,
+    "ev_degradation_cost": 124.846147,
+    "grid_import_energy_kwh": 65263.89581749999,
+    "grid_export_energy_kwh": 0.0,
+    "pv_curtail_energy_kwh": 0.0,
+    "load_shed_energy_kwh": 0.0,
+    "ess_charge_energy_kwh": 7060.3878075,
+    "ess_discharge_energy_kwh": 6372.0,
+    "ev_charge_energy_kwh": 2485.5180058225,
+    "ev_discharge_energy_kwh": 397.235,
+    "solver_status": null,
+    "solve_time_seconds": null,
+    "source_reconciliation": "results\\tables\\objective_reconciliation_fullweek.csv",
+    "source_timeseries": "results\\problem1_ultimate\\p_1_5_timeseries.csv"
+  }
+]

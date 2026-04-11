@@ -1,0 +1,2 @@
+typical_date=2025-07-20
+rule=argmax over calendar days: std(p1_grid_import)+0.01*sum(ess_ch+ess_dis)+50*|corr(grid_import,price)|

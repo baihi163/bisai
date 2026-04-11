@@ -1,0 +1,4 @@
+typical_date=2025-07-20
+p1_multichannel_figures: problem1 only
+grid_compare: problem1 vs baseline grid_import_kw only
+grid_export_energy_kwh_p1=0; pv_curtail_energy_kwh_p1=0 (see paper_p1_grid_pv_digest_zh.md)

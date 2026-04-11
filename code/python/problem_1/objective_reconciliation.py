@@ -94,12 +94,14 @@ def summarize_coordinated_costs(prob: pulp.LpProblem, data: dict[str, Any], ctx:
     carbon_cost = 0.0
     pv_curtail_penalty = 0.0
     ess_degradation_cost = 0.0
+    pc = float(ctx.get("PENALTY_CURTAIL", PENALTY_CURTAIL))
+    ps = float(ctx.get("PENALTY_SHIFT", PENALTY_SHIFT))
     for t in T:
         pb, psell, ppu = var_float(P_buy[t]), var_float(P_sell[t]), var_float(P_pv_use[t])
         grid_import_cost += float(data["buy_price"][t]) * pb * dt
         grid_export_revenue += float(data["sell_price"][t]) * psell * dt
         carbon_cost += carbon_price * float(data["grid_carbon"][t]) * pb * dt
-        pv_curtail_penalty += PENALTY_CURTAIL * (float(data["pv_upper"][t]) - ppu) * dt
+        pv_curtail_penalty += pc * (float(data["pv_upper"][t]) - ppu) * dt
         ess_degradation_cost += float(ess["degradation_cost_cny_per_kwh"]) * (
             var_float(P_ess_ch[t]) + var_float(P_ess_dis[t])
         ) * dt / 2
@@ -110,7 +112,7 @@ def summarize_coordinated_costs(prob: pulp.LpProblem, data: dict[str, Any], ctx:
         name = b["name"]
         for t in T:
             key = (name, t)
-            building_shift_penalty += PENALTY_SHIFT * (var_float(P_shift_out[key]) + var_float(P_recover[key])) * dt
+            building_shift_penalty += ps * (var_float(P_shift_out[key]) + var_float(P_recover[key])) * dt
             load_shed_penalty += float(b["penalty_not_served"]) * var_float(P_shed[key]) * dt
 
     ev_degradation_cost = 0.0

@@ -353,20 +353,21 @@ def build_and_solve(
         Y_ev_dis = None
 
     # 目标函数：购电 - 售电 + 碳排放 + 弃光惩罚 + 储能退化 + 负荷惩罚 + EV退化
-    PENALTY_CURTAIL = 0.5
-    PENALTY_SHIFT = 0.02
+    # 可选覆盖（灵敏度分析用）：data["penalty_curtail_per_kwh"], data["penalty_shift_linear_cny_per_kw"]
+    penalty_curtail = float(data.get("penalty_curtail_per_kwh", 0.5))
+    penalty_shift = float(data.get("penalty_shift_linear_cny_per_kw", 0.02))
 
     obj_terms = []
     for t in T:
         obj_terms.append(data["buy_price"][t] * P_buy[t] * dt)
         obj_terms.append(-data["sell_price"][t] * P_sell[t] * dt)
         obj_terms.append(carbon_price * data["grid_carbon"][t] * P_buy[t] * dt)
-        obj_terms.append(PENALTY_CURTAIL * (data["pv_upper"][t] - P_pv_use[t]) * dt)
+        obj_terms.append(penalty_curtail * (data["pv_upper"][t] - P_pv_use[t]) * dt)
         obj_terms.append(ess["degradation_cost_cny_per_kwh"] * (P_ess_ch[t] + P_ess_dis[t]) * dt / 2)
 
     for b in buildings:
         for t in T:
-            obj_terms.append(PENALTY_SHIFT * (P_shift_out[(b["name"], t)] + P_recover[(b["name"], t)]) * dt)
+            obj_terms.append(penalty_shift * (P_shift_out[(b["name"], t)] + P_recover[(b["name"], t)]) * dt)
             obj_terms.append(b["penalty_not_served"] * P_shed[(b["name"], t)] * dt)
 
     for i, ev in enumerate(ev_sessions):
@@ -492,8 +493,8 @@ def build_and_solve(
     if prob.status == pulp.LpStatusOptimal:
         solve_ctx = {
             "carbon_price": carbon_price,
-            "PENALTY_CURTAIL": PENALTY_CURTAIL,
-            "PENALTY_SHIFT": PENALTY_SHIFT,
+            "PENALTY_CURTAIL": penalty_curtail,
+            "PENALTY_SHIFT": penalty_shift,
             "P_buy": P_buy,
             "P_sell": P_sell,
             "P_pv_use": P_pv_use,
