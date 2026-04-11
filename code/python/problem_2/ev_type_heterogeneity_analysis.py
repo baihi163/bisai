@@ -170,7 +170,7 @@ def plot_capacity_degradation_polished(summary: pd.DataFrame, png_path: Path) ->
     ax1.set_title("不同车型 EV 的平均电池容量与单位吞吐退化成本", pad=10)
     h1, l1 = ax1.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
-    ax1.legend(h1 + h2, l1 + l2, loc="upper right", frameon=True, fancybox=False, edgecolor="#D0D4D8", facecolor="#FAFBFC")
+    ax1.legend(h1 + h2, l1 + l2, loc="upper left", frameon=True, fancybox=False, edgecolor="#D0D4D8", facecolor="#FAFBFC")
 
     save_figure_paper_formats(fig, png_path)
 
@@ -250,7 +250,7 @@ def plot_heterogeneity_panel_polished(summary: pd.DataFrame, png_path: Path) -> 
     ax_a.set_title("（a）平均电池容量与单位吞吐退化成本", fontsize=11, loc="left", color=PAPER["text_muted"])
     h1, l1 = ax_a.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
-    ax_a.legend(h1 + h2, l1 + l2, loc="upper right", frameon=True, fancybox=False, edgecolor="#D0D4D8", fontsize=8.5)
+    ax_a.legend(h1 + h2, l1 + l2, loc="upper left", frameon=True, fancybox=False, edgecolor="#D0D4D8", fontsize=8.5)
 
     yb = np.arange(len(labels))
     ax_b.barh(yb, pct, height=0.52, color=PAPER["v2b_bar"], edgecolor=PAPER["v2b_edge"], linewidth=0.5, zorder=2)

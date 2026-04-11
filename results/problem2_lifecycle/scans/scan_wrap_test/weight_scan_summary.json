@@ -1,0 +1,32 @@
+[
+  {
+    "ess_deg_weight":0.0,
+    "ev_deg_weight":0.0,
+    "solver_status":"Optimal",
+    "objective_total":2118.5590415625,
+    "objective_recomputed":2118.5590415625,
+    "operation_cost":2118.5590415625,
+    "ess_deg_cost":0.0,
+    "ev_deg_cost":0.0,
+    "ess_throughput":480.63157875,
+    "ev_throughput":74.6082660938,
+    "grid_import_energy":4227.72968875,
+    "grid_export_energy":0.0,
+    "pv_curtail_energy":0.0
+  },
+  {
+    "ess_deg_weight":0.5,
+    "ev_deg_weight":0.5,
+    "solver_status":"Optimal",
+    "objective_total":2134.8989749124,
+    "objective_recomputed":2134.8989749124,
+    "operation_cost":2118.5590415625,
+    "ess_deg_cost":13.2173684156,
+    "ev_deg_cost":3.1225649342,
+    "ess_throughput":480.63157875,
+    "ev_throughput":74.6082660938,
+    "grid_import_energy":4227.72968875,
+    "grid_export_energy":0.0,
+    "pv_curtail_energy":0.0
+  }
+]

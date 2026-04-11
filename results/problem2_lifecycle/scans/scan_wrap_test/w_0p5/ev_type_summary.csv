@@ -1,0 +1,4 @@
+﻿ev_type,session_count,v2b_allowed_sessions,v2b_active_sessions_discharge,v2b_allowed_share,total_charge_energy_kwh,total_discharge_energy_kwh,total_throughput_kwh,total_ev_degradation_cost_cny
+SUV,8,5,0,0.625,71.148342865,0.0,35.5741714325,1.26930894261625
+compact,6,5,0,0.8333333333333334,36.9500453725,0.0,18.47502268625,0.926575786620625
+sedan,6,6,0,1.0,41.11814395,0.0,20.559071975,0.9266802050000001

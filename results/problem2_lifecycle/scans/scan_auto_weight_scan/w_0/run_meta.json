@@ -1,0 +1,8 @@
+{
+  "ess_deg_weight": 0.0,
+  "ev_deg_weight": 0.0,
+  "carbon_price": 0.0,
+  "use_grid_mutex": true,
+  "solver_status": "Optimal",
+  "timestamp_utc": "20260411T075036Z"
+}

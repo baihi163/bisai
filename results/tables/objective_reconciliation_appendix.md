@@ -1,18 +1,18 @@
-# 目标函数分项对账表（附录 / 补充材料）
+# 目标函数分项对账表（附录）
 
-分项口径见 `objective_reconciliation.py` 与 `p_1_5_ultimate` 目标函数定义。
+分项定义与协同调度模型目标函数及解后重算口径一致；金额单位为元。
 
-| 项 | 数值（元） |
+| 成本项 | 金额（元） |
 | --- | ---: |
-| Grid import cost | 38634.5193 |
-| Grid export revenue | 0.0000 |
-| PV curtailment penalty | 0.0000 |
-| Load shed penalty | 0.0000 |
-| Building shift penalty | 338.7000 |
-| ESS degradation cost | 369.3907 |
-| EV degradation cost | 124.8461 |
-| Carbon cost | 0.0000 |
-| Objective affine constant | 11484.6500 |
-| Objective from solver | 39467.4561 |
-| Objective recomputed from solution | 39467.4561 |
-| Objective shown in CBC log style | 27982.8061 |
+| 电网购电成本 | 38634.5193 |
+| 电网售电收益 | 0.0000 |
+| 光伏弃电惩罚成本 | 0.0000 |
+| 未供电惩罚成本 | 0.0000 |
+| 建筑柔性调节补偿成本 | 338.7000 |
+| 储能退化成本 | 369.3907 |
+| 电动汽车电池退化成本 | 124.8461 |
+| 碳排放成本 | 0.0000 |
+| 目标函数常数项 | 11484.6500 |
+| 最优目标函数值 | 39467.4561 |
+| 解后重算目标值 | 39467.4561 |
+| 按 CBC 日志口径的目标值 | 27982.8061 |

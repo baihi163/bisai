@@ -1,0 +1,35 @@
+[
+  {
+    "ev_type":"SUV",
+    "session_count":31,
+    "v2b_allowed_sessions":19,
+    "v2b_active_sessions_discharge":14,
+    "v2b_allowed_share":0.6129032258,
+    "total_charge_energy_kwh":903.4238228075,
+    "total_discharge_energy_kwh":134.76,
+    "total_throughput_kwh":519.0919114038,
+    "total_ev_degradation_cost_cny":73.5096505189
+  },
+  {
+    "ev_type":"compact",
+    "session_count":40,
+    "v2b_allowed_sessions":27,
+    "v2b_active_sessions_discharge":15,
+    "v2b_allowed_share":0.675,
+    "total_charge_energy_kwh":909.0526317,
+    "total_discharge_energy_kwh":142.88,
+    "total_throughput_kwh":525.96631585,
+    "total_ev_degradation_cost_cny":105.8532735569
+  },
+  {
+    "ev_type":"sedan",
+    "session_count":29,
+    "v2b_allowed_sessions":22,
+    "v2b_active_sessions_discharge":10,
+    "v2b_allowed_share":0.7586206897,
+    "total_charge_energy_kwh":667.700831115,
+    "total_discharge_energy_kwh":114.775,
+    "total_throughput_kwh":391.2379155575,
+    "total_ev_degradation_cost_cny":69.709566974
+  }
+]

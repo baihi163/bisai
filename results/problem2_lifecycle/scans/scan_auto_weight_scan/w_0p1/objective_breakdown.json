@@ -1,0 +1,14 @@
+{
+  "grid_import_cost": 38623.41295847503,
+  "grid_export_revenue": 0.0,
+  "carbon_cost": 0.0,
+  "pv_curtail_penalty": 0.0,
+  "building_shift_penalty": 338.69999999999595,
+  "load_shed_penalty": 0.0,
+  "ess_degradation_cost": 37.008631563750015,
+  "ev_degradation_cost": 13.96901165201614,
+  "operation_cost": 38962.11295847503,
+  "objective_from_solver": 39013.09060169,
+  "objective_recomputed": 39013.0906016908,
+  "objective_abs_gap": 8.003553375601768e-10
+}

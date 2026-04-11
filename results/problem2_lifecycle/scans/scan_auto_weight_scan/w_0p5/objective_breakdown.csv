@@ -1,0 +1,13 @@
+﻿metric,value_yuan
+grid_import_cost,38623.539937825044
+grid_export_revenue,0.0
+carbon_cost,0.0
+pv_curtail_penalty,0.0
+building_shift_penalty,338.69999999999595
+load_shed_penalty,0.0
+ess_degradation_cost,184.69533235312497
+ev_degradation_cost,69.84505826008053
+operation_cost,38962.23993782504
+objective_from_solver,39216.78032843792
+objective_recomputed,39216.780328438246
+objective_abs_gap,3.2741809263825417e-10

@@ -1,0 +1,2 @@
+﻿ess_deg_weight,ev_deg_weight,solver_status,objective_total,objective_recomputed,operation_cost,ess_deg_cost,ev_deg_cost,ess_throughput,ev_throughput,grid_import_energy,grid_export_energy,pv_curtail_energy
+1.0,0.5,Optimal,6643.873872948991,6643.873872948969,6575.992335725,52.8694736625,15.012063561468764,961.2631575,355.91189755625004,9713.4486675,0.0,0.0
