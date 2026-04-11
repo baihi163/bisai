@@ -1,0 +1,17 @@
+{
+  "timestamp_utc": "20260411T095044Z",
+  "carbon_price": 0.0,
+  "ess_deg_weight": 1.0,
+  "ev_deg_weight": 1.0,
+  "use_grid_mutex": true,
+  "ev_type_summary_csv": null,
+  "ev_deg_summary_rule": "none",
+  "v2b_discharge_only_types": null,
+  "solver_status": "Optimal",
+  "solver_code": 1,
+  "solve_time_seconds": 0.2884386000005179,
+  "objective_value": 6663.978919532786,
+  "ess_terminal_mode": "eq",
+  "ev_min_soc_ratio": 0.1,
+  "recover_penalty_weight": 0.01
+}

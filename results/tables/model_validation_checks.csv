@@ -1,0 +1,93 @@
+﻿model_name,run_tag,check_name,pass_flag,value,threshold,message
+p2_lifecycle,final_smoke,solver_status_optimal,pass,Optimal,Optimal,CBC / PuLP 状态标签。
+p2_lifecycle,final_smoke,objective_abs_gap_small,pass,1.0913936421275139e-11,<= 0.02,目标重算与求解器目标绝对差（元）。
+p2_lifecycle,final_smoke,ess_energy_within_bounds,pass,"{""violations_below"": 0, ""violations_above"": 0, ""e_min"": 119.99999962500016, ""e_max"": 1079.9999996249999}","{""min_kwh"": 120.0, ""max_kwh"": 1080.0, ""tol_kwh"": 1.0}",由时序功率与 ess_params 递推的 SOC 是否越界。
+p2_lifecycle,final_smoke,ev_departure_demand_met,not_applicable,,,p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。
+p2_lifecycle,final_smoke,no_simultaneous_grid_buy_sell_slots,pass,0,count_slots_buy_and_sell_gt_1.0kw,购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。
+p2_lifecycle,final_smoke,no_simultaneous_ess_charge_discharge_slots,pass,0,count_slots_ch_and_dis_gt_0.5kw,ESS 充、放电功率同时大于阈值的时段数。
+p2_lifecycle,final_smoke,ev_fleet_ch_dis_positive_slots_reference,not_applicable,0,informational,车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。
+p2_lifecycle,final_smoke,pv_curtail_non_negative,pass,0.0,>= -1e-06,弃光功率最小值。
+p2_lifecycle,final_smoke,load_shed_non_negative,pass,0.0,>= -1e-06,切负荷功率最小值。
+p2_lifecycle,final_smoke,building_recover_non_negative,pass,0.0,>= -1e-06,建筑恢复功率最小值（p2/p1 协同时序）。
+p2_lifecycle,model_check_p2,solver_status_optimal,pass,Optimal,Optimal,CBC / PuLP 状态标签。
+p2_lifecycle,model_check_p2,objective_abs_gap_small,pass,1.0913936421275139e-11,<= 0.02,目标重算与求解器目标绝对差（元）。
+p2_lifecycle,model_check_p2,ess_energy_within_bounds,pass,"{""violations_below"": 0, ""violations_above"": 0, ""e_min"": 119.99999962500016, ""e_max"": 1079.9999996249999}","{""min_kwh"": 120.0, ""max_kwh"": 1080.0, ""tol_kwh"": 1.0}",由时序功率与 ess_params 递推的 SOC 是否越界。
+p2_lifecycle,model_check_p2,ev_departure_demand_met,not_applicable,,,p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。
+p2_lifecycle,model_check_p2,no_simultaneous_grid_buy_sell_slots,pass,0,count_slots_buy_and_sell_gt_1.0kw,购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。
+p2_lifecycle,model_check_p2,no_simultaneous_ess_charge_discharge_slots,pass,0,count_slots_ch_and_dis_gt_0.5kw,ESS 充、放电功率同时大于阈值的时段数。
+p2_lifecycle,model_check_p2,ev_fleet_ch_dis_positive_slots_reference,not_applicable,0,informational,车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。
+p2_lifecycle,model_check_p2,pv_curtail_non_negative,pass,0.0,>= -1e-06,弃光功率最小值。
+p2_lifecycle,model_check_p2,load_shed_non_negative,pass,0.0,>= -1e-06,切负荷功率最小值。
+p2_lifecycle,model_check_p2,building_recover_non_negative,pass,0.0,>= -1e-06,建筑恢复功率最小值（p2/p1 协同时序）。
+p2_lifecycle,policy_override_test,solver_status_optimal,pass,Optimal,Optimal,CBC / PuLP 状态标签。
+p2_lifecycle,policy_override_test,objective_abs_gap_small,pass,4.547473508864641e-13,<= 0.02,目标重算与求解器目标绝对差（元）。
+p2_lifecycle,policy_override_test,ess_energy_within_bounds,pass,"{""violations_below"": 0, ""violations_above"": 0, ""e_min"": 599.9999996250003, ""e_max"": 1079.999999625}","{""min_kwh"": 120.0, ""max_kwh"": 1080.0, ""tol_kwh"": 1.0}",由时序功率与 ess_params 递推的 SOC 是否越界。
+p2_lifecycle,policy_override_test,ev_departure_demand_met,not_applicable,,,p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。
+p2_lifecycle,policy_override_test,no_simultaneous_grid_buy_sell_slots,pass,0,count_slots_buy_and_sell_gt_1.0kw,购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。
+p2_lifecycle,policy_override_test,no_simultaneous_ess_charge_discharge_slots,pass,0,count_slots_ch_and_dis_gt_0.5kw,ESS 充、放电功率同时大于阈值的时段数。
+p2_lifecycle,policy_override_test,ev_fleet_ch_dis_positive_slots_reference,not_applicable,0,informational,车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。
+p2_lifecycle,policy_override_test,pv_curtail_non_negative,pass,0.0,>= -1e-06,弃光功率最小值。
+p2_lifecycle,policy_override_test,load_shed_non_negative,pass,0.0,>= -1e-06,切负荷功率最小值。
+p2_lifecycle,policy_override_test,building_recover_non_negative,pass,0.0,>= -1e-06,建筑恢复功率最小值（p2/p1 协同时序）。
+p2_lifecycle,policy_suv_v2b,solver_status_optimal,pass,Optimal,Optimal,CBC / PuLP 状态标签。
+p2_lifecycle,policy_suv_v2b,objective_abs_gap_small,pass,4.547473508864641e-12,<= 0.02,目标重算与求解器目标绝对差（元）。
+p2_lifecycle,policy_suv_v2b,ess_energy_within_bounds,pass,"{""violations_below"": 0, ""violations_above"": 0, ""e_min"": 599.9999996250001, ""e_max"": 1079.9999996249999}","{""min_kwh"": 120.0, ""max_kwh"": 1080.0, ""tol_kwh"": 1.0}",由时序功率与 ess_params 递推的 SOC 是否越界。
+p2_lifecycle,policy_suv_v2b,ev_departure_demand_met,not_applicable,,,p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。
+p2_lifecycle,policy_suv_v2b,no_simultaneous_grid_buy_sell_slots,pass,0,count_slots_buy_and_sell_gt_1.0kw,购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。
+p2_lifecycle,policy_suv_v2b,no_simultaneous_ess_charge_discharge_slots,pass,0,count_slots_ch_and_dis_gt_0.5kw,ESS 充、放电功率同时大于阈值的时段数。
+p2_lifecycle,policy_suv_v2b,ev_fleet_ch_dis_positive_slots_reference,not_applicable,0,informational,车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。
+p2_lifecycle,policy_suv_v2b,pv_curtail_non_negative,pass,0.0,>= -1e-06,弃光功率最小值。
+p2_lifecycle,policy_suv_v2b,load_shed_non_negative,pass,0.0,>= -1e-06,切负荷功率最小值。
+p2_lifecycle,policy_suv_v2b,building_recover_non_negative,pass,0.0,>= -1e-06,建筑恢复功率最小值（p2/p1 协同时序）。
+p2_lifecycle,test_single,solver_status_optimal,pass,Optimal,Optimal,CBC / PuLP 状态标签。
+p2_lifecycle,test_single,objective_abs_gap_small,pass,2.2737367544323206e-11,<= 0.02,目标重算与求解器目标绝对差（元）。
+p2_lifecycle,test_single,ess_energy_within_bounds,pass,"{""violations_below"": 0, ""violations_above"": 0, ""e_min"": 119.99999962500017, ""e_max"": 1079.9999996249999}","{""min_kwh"": 120.0, ""max_kwh"": 1080.0, ""tol_kwh"": 1.0}",由时序功率与 ess_params 递推的 SOC 是否越界。
+p2_lifecycle,test_single,ev_departure_demand_met,not_applicable,,,p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。
+p2_lifecycle,test_single,no_simultaneous_grid_buy_sell_slots,pass,0,count_slots_buy_and_sell_gt_1.0kw,购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。
+p2_lifecycle,test_single,no_simultaneous_ess_charge_discharge_slots,pass,0,count_slots_ch_and_dis_gt_0.5kw,ESS 充、放电功率同时大于阈值的时段数。
+p2_lifecycle,test_single,ev_fleet_ch_dis_positive_slots_reference,not_applicable,1,informational,车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。
+p2_lifecycle,test_single,pv_curtail_non_negative,pass,0.0,>= -1e-06,弃光功率最小值。
+p2_lifecycle,test_single,load_shed_non_negative,pass,0.0,>= -1e-06,切负荷功率最小值。
+p2_lifecycle,test_single,building_recover_non_negative,pass,0.0,>= -1e-06,建筑恢复功率最小值（p2/p1 协同时序）。
+p2_lifecycle,verify_base,solver_status_optimal,pass,Optimal,Optimal,CBC / PuLP 状态标签。
+p2_lifecycle,verify_base,objective_abs_gap_small,pass,1.1823431123048067e-11,<= 0.02,目标重算与求解器目标绝对差（元）。
+p2_lifecycle,verify_base,ess_energy_within_bounds,pass,"{""violations_below"": 0, ""violations_above"": 0, ""e_min"": 119.99999962500016, ""e_max"": 1079.9999996249999}","{""min_kwh"": 120.0, ""max_kwh"": 1080.0, ""tol_kwh"": 1.0}",由时序功率与 ess_params 递推的 SOC 是否越界。
+p2_lifecycle,verify_base,ev_departure_demand_met,not_applicable,,,p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。
+p2_lifecycle,verify_base,no_simultaneous_grid_buy_sell_slots,pass,0,count_slots_buy_and_sell_gt_1.0kw,购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。
+p2_lifecycle,verify_base,no_simultaneous_ess_charge_discharge_slots,pass,0,count_slots_ch_and_dis_gt_0.5kw,ESS 充、放电功率同时大于阈值的时段数。
+p2_lifecycle,verify_base,ev_fleet_ch_dis_positive_slots_reference,not_applicable,0,informational,车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。
+p2_lifecycle,verify_base,pv_curtail_non_negative,pass,0.0,>= -1e-06,弃光功率最小值。
+p2_lifecycle,verify_base,load_shed_non_negative,pass,0.0,>= -1e-06,切负荷功率最小值。
+p2_lifecycle,verify_base,building_recover_non_negative,pass,0.0,>= -1e-06,建筑恢复功率最小值（p2/p1 协同时序）。
+p2_lifecycle,verify_evhet,solver_status_optimal,pass,Optimal,Optimal,CBC / PuLP 状态标签。
+p2_lifecycle,verify_evhet,objective_abs_gap_small,pass,3.728928277269006e-11,<= 0.02,目标重算与求解器目标绝对差（元）。
+p2_lifecycle,verify_evhet,ess_energy_within_bounds,pass,"{""violations_below"": 0, ""violations_above"": 0, ""e_min"": 119.99999962500016, ""e_max"": 1079.9999996249999}","{""min_kwh"": 120.0, ""max_kwh"": 1080.0, ""tol_kwh"": 1.0}",由时序功率与 ess_params 递推的 SOC 是否越界。
+p2_lifecycle,verify_evhet,ev_departure_demand_met,not_applicable,,,p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。
+p2_lifecycle,verify_evhet,no_simultaneous_grid_buy_sell_slots,pass,0,count_slots_buy_and_sell_gt_1.0kw,购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。
+p2_lifecycle,verify_evhet,no_simultaneous_ess_charge_discharge_slots,pass,0,count_slots_ch_and_dis_gt_0.5kw,ESS 充、放电功率同时大于阈值的时段数。
+p2_lifecycle,verify_evhet,ev_fleet_ch_dis_positive_slots_reference,not_applicable,0,informational,车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。
+p2_lifecycle,verify_evhet,pv_curtail_non_negative,pass,0.0,>= -1e-06,弃光功率最小值。
+p2_lifecycle,verify_evhet,load_shed_non_negative,pass,0.0,>= -1e-06,切负荷功率最小值。
+p2_lifecycle,verify_evhet,building_recover_non_negative,pass,0.0,>= -1e-06,建筑恢复功率最小值（p2/p1 协同时序）。
+p1_coordinated,p1_ultimate_latest,solver_status_optimal,not_applicable,,,p1 脚本未写入求解器状态文件。
+p1_coordinated,p1_ultimate_latest,objective_abs_gap_small,pass,0.0,<= 0.02,由全周或附录对账表两目标行差分。
+p1_coordinated,p1_ultimate_latest,ess_energy_within_bounds,pass,"{""violations_below"": 0, ""violations_above"": 0}","{""min_kwh"": 120.0, ""max_kwh"": 1080.0}",由 p1 时序递推 ESS 能量。
+p1_coordinated,p1_ultimate_latest,ev_departure_demand_met,not_applicable,,,p1 未在本次导出逐会话离场标志。
+p1_coordinated,p1_ultimate_latest,no_simultaneous_grid_buy_sell_slots,pass,0,count_slots_buy_and_sell_gt_1.0kw,购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。
+p1_coordinated,p1_ultimate_latest,no_simultaneous_ess_charge_discharge_slots,pass,0,count_slots_ch_and_dis_gt_0.5kw,ESS 充、放电功率同时大于阈值的时段数。
+p1_coordinated,p1_ultimate_latest,ev_fleet_ch_dis_positive_slots_reference,not_applicable,0,informational,车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。
+p1_coordinated,p1_ultimate_latest,pv_curtail_non_negative,pass,0.0,>= -1e-06,弃光功率最小值。
+p1_coordinated,p1_ultimate_latest,load_shed_non_negative,pass,0.0,>= -1e-06,切负荷功率最小值。
+p1_coordinated,p1_ultimate_latest,building_recover_non_negative,pass,0.0,>= -1e-06,建筑恢复功率最小值（p2/p1 协同时序）。
+baseline_noncooperative,baseline_default,solver_status_optimal,not_applicable,,,baseline 为规则仿真，无 MILP 状态。
+baseline_noncooperative,baseline_default,objective_abs_gap_small,pass,0.0,<= 0.02,baseline 对账表两目标行。
+baseline_noncooperative,baseline_default,ess_energy_within_bounds,pass,"{""violations_below"": 0, ""violations_above"": 0, ""e_min"": 120.0, ""e_max"": 600.0}","{""min_kwh"": 120.0, ""max_kwh"": 1080.0}",baseline 时序 ess_energy_kwh 与参数上下界。
+baseline_noncooperative,baseline_default,ev_departure_demand_met,fail,"{""sessions_unmet"": 2, ""n_sessions"": 102}",sessions_unmet == 0,baseline 离站需求满足标志。
+baseline_noncooperative,baseline_default,no_simultaneous_grid_buy_sell_slots,pass,0,count_gt_1.0kw,baseline 使用 grid_import_kw / grid_export_kw。
+baseline_noncooperative,baseline_default,no_simultaneous_ess_charge_discharge_slots,pass,0,count_gt_0.5kw,baseline ESS 同时充放。
+baseline_noncooperative,baseline_default,ev_fleet_ch_dis_positive_slots_reference,not_applicable,,,baseline EV 仅充电，跳过车队参考项。
+baseline_noncooperative,baseline_default,pv_curtail_non_negative,pass,0.0,>= -1e-06,弃光（baseline 列名 pv_curtailed_kw）。
+baseline_noncooperative,baseline_default,load_shed_non_negative,pass,0.0,>= -1e-06,未供电功率非负。
+baseline_noncooperative,baseline_default,building_recover_non_negative,not_applicable,,,baseline 无建筑恢复列。
+p2_weight_scan,scan_verify,scan_rows_objective_finite,pass,0,error_or_nan_count == 0,扫描行中 objective_recomputed 为 NaN 或 solver_status=error 计数。
+p2_weight_scan,scan_verify,scan_trend_ev_deg_vs_weight,pass,1.0,Spearman(rho) >= -0.3,ev_deg_cost 随退化权重应总体不呈强负相关（启发式稳健性）。

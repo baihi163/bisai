@@ -1,0 +1,910 @@
+[
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "final_smoke",
+    "check_name": "solver_status_optimal",
+    "pass_flag": "pass",
+    "value": "Optimal",
+    "threshold": "Optimal",
+    "message": "CBC / PuLP 状态标签。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "final_smoke",
+    "check_name": "objective_abs_gap_small",
+    "pass_flag": "pass",
+    "value": 1.0913936421275139e-11,
+    "threshold": "<= 0.02",
+    "message": "目标重算与求解器目标绝对差（元）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "final_smoke",
+    "check_name": "ess_energy_within_bounds",
+    "pass_flag": "pass",
+    "value": {
+      "violations_below": 0,
+      "violations_above": 0,
+      "e_min": 119.99999962500016,
+      "e_max": 1079.9999996249999
+    },
+    "threshold": {
+      "min_kwh": 120.0,
+      "max_kwh": 1080.0,
+      "tol_kwh": 1.0
+    },
+    "message": "由时序功率与 ess_params 递推的 SOC 是否越界。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "final_smoke",
+    "check_name": "ev_departure_demand_met",
+    "pass_flag": "not_applicable",
+    "value": null,
+    "threshold": null,
+    "message": "p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "final_smoke",
+    "check_name": "no_simultaneous_grid_buy_sell_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_buy_and_sell_gt_1.0kw",
+    "message": "购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "final_smoke",
+    "check_name": "no_simultaneous_ess_charge_discharge_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_ch_and_dis_gt_0.5kw",
+    "message": "ESS 充、放电功率同时大于阈值的时段数。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "final_smoke",
+    "check_name": "ev_fleet_ch_dis_positive_slots_reference",
+    "pass_flag": "not_applicable",
+    "value": 0,
+    "threshold": "informational",
+    "message": "车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "final_smoke",
+    "check_name": "pv_curtail_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "弃光功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "final_smoke",
+    "check_name": "load_shed_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "切负荷功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "final_smoke",
+    "check_name": "building_recover_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "建筑恢复功率最小值（p2/p1 协同时序）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "model_check_p2",
+    "check_name": "solver_status_optimal",
+    "pass_flag": "pass",
+    "value": "Optimal",
+    "threshold": "Optimal",
+    "message": "CBC / PuLP 状态标签。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "model_check_p2",
+    "check_name": "objective_abs_gap_small",
+    "pass_flag": "pass",
+    "value": 1.0913936421275139e-11,
+    "threshold": "<= 0.02",
+    "message": "目标重算与求解器目标绝对差（元）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "model_check_p2",
+    "check_name": "ess_energy_within_bounds",
+    "pass_flag": "pass",
+    "value": {
+      "violations_below": 0,
+      "violations_above": 0,
+      "e_min": 119.99999962500016,
+      "e_max": 1079.9999996249999
+    },
+    "threshold": {
+      "min_kwh": 120.0,
+      "max_kwh": 1080.0,
+      "tol_kwh": 1.0
+    },
+    "message": "由时序功率与 ess_params 递推的 SOC 是否越界。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "model_check_p2",
+    "check_name": "ev_departure_demand_met",
+    "pass_flag": "not_applicable",
+    "value": null,
+    "threshold": null,
+    "message": "p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "model_check_p2",
+    "check_name": "no_simultaneous_grid_buy_sell_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_buy_and_sell_gt_1.0kw",
+    "message": "购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "model_check_p2",
+    "check_name": "no_simultaneous_ess_charge_discharge_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_ch_and_dis_gt_0.5kw",
+    "message": "ESS 充、放电功率同时大于阈值的时段数。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "model_check_p2",
+    "check_name": "ev_fleet_ch_dis_positive_slots_reference",
+    "pass_flag": "not_applicable",
+    "value": 0,
+    "threshold": "informational",
+    "message": "车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "model_check_p2",
+    "check_name": "pv_curtail_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "弃光功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "model_check_p2",
+    "check_name": "load_shed_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "切负荷功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "model_check_p2",
+    "check_name": "building_recover_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "建筑恢复功率最小值（p2/p1 协同时序）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_override_test",
+    "check_name": "solver_status_optimal",
+    "pass_flag": "pass",
+    "value": "Optimal",
+    "threshold": "Optimal",
+    "message": "CBC / PuLP 状态标签。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_override_test",
+    "check_name": "objective_abs_gap_small",
+    "pass_flag": "pass",
+    "value": 4.547473508864641e-13,
+    "threshold": "<= 0.02",
+    "message": "目标重算与求解器目标绝对差（元）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_override_test",
+    "check_name": "ess_energy_within_bounds",
+    "pass_flag": "pass",
+    "value": {
+      "violations_below": 0,
+      "violations_above": 0,
+      "e_min": 599.9999996250003,
+      "e_max": 1079.999999625
+    },
+    "threshold": {
+      "min_kwh": 120.0,
+      "max_kwh": 1080.0,
+      "tol_kwh": 1.0
+    },
+    "message": "由时序功率与 ess_params 递推的 SOC 是否越界。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_override_test",
+    "check_name": "ev_departure_demand_met",
+    "pass_flag": "not_applicable",
+    "value": null,
+    "threshold": null,
+    "message": "p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_override_test",
+    "check_name": "no_simultaneous_grid_buy_sell_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_buy_and_sell_gt_1.0kw",
+    "message": "购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_override_test",
+    "check_name": "no_simultaneous_ess_charge_discharge_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_ch_and_dis_gt_0.5kw",
+    "message": "ESS 充、放电功率同时大于阈值的时段数。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_override_test",
+    "check_name": "ev_fleet_ch_dis_positive_slots_reference",
+    "pass_flag": "not_applicable",
+    "value": 0,
+    "threshold": "informational",
+    "message": "车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_override_test",
+    "check_name": "pv_curtail_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "弃光功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_override_test",
+    "check_name": "load_shed_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "切负荷功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_override_test",
+    "check_name": "building_recover_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "建筑恢复功率最小值（p2/p1 协同时序）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_suv_v2b",
+    "check_name": "solver_status_optimal",
+    "pass_flag": "pass",
+    "value": "Optimal",
+    "threshold": "Optimal",
+    "message": "CBC / PuLP 状态标签。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_suv_v2b",
+    "check_name": "objective_abs_gap_small",
+    "pass_flag": "pass",
+    "value": 4.547473508864641e-12,
+    "threshold": "<= 0.02",
+    "message": "目标重算与求解器目标绝对差（元）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_suv_v2b",
+    "check_name": "ess_energy_within_bounds",
+    "pass_flag": "pass",
+    "value": {
+      "violations_below": 0,
+      "violations_above": 0,
+      "e_min": 599.9999996250001,
+      "e_max": 1079.9999996249999
+    },
+    "threshold": {
+      "min_kwh": 120.0,
+      "max_kwh": 1080.0,
+      "tol_kwh": 1.0
+    },
+    "message": "由时序功率与 ess_params 递推的 SOC 是否越界。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_suv_v2b",
+    "check_name": "ev_departure_demand_met",
+    "pass_flag": "not_applicable",
+    "value": null,
+    "threshold": null,
+    "message": "p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_suv_v2b",
+    "check_name": "no_simultaneous_grid_buy_sell_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_buy_and_sell_gt_1.0kw",
+    "message": "购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_suv_v2b",
+    "check_name": "no_simultaneous_ess_charge_discharge_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_ch_and_dis_gt_0.5kw",
+    "message": "ESS 充、放电功率同时大于阈值的时段数。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_suv_v2b",
+    "check_name": "ev_fleet_ch_dis_positive_slots_reference",
+    "pass_flag": "not_applicable",
+    "value": 0,
+    "threshold": "informational",
+    "message": "车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_suv_v2b",
+    "check_name": "pv_curtail_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "弃光功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_suv_v2b",
+    "check_name": "load_shed_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "切负荷功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "policy_suv_v2b",
+    "check_name": "building_recover_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "建筑恢复功率最小值（p2/p1 协同时序）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "test_single",
+    "check_name": "solver_status_optimal",
+    "pass_flag": "pass",
+    "value": "Optimal",
+    "threshold": "Optimal",
+    "message": "CBC / PuLP 状态标签。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "test_single",
+    "check_name": "objective_abs_gap_small",
+    "pass_flag": "pass",
+    "value": 2.2737367544323206e-11,
+    "threshold": "<= 0.02",
+    "message": "目标重算与求解器目标绝对差（元）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "test_single",
+    "check_name": "ess_energy_within_bounds",
+    "pass_flag": "pass",
+    "value": {
+      "violations_below": 0,
+      "violations_above": 0,
+      "e_min": 119.99999962500017,
+      "e_max": 1079.9999996249999
+    },
+    "threshold": {
+      "min_kwh": 120.0,
+      "max_kwh": 1080.0,
+      "tol_kwh": 1.0
+    },
+    "message": "由时序功率与 ess_params 递推的 SOC 是否越界。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "test_single",
+    "check_name": "ev_departure_demand_met",
+    "pass_flag": "not_applicable",
+    "value": null,
+    "threshold": null,
+    "message": "p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "test_single",
+    "check_name": "no_simultaneous_grid_buy_sell_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_buy_and_sell_gt_1.0kw",
+    "message": "购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "test_single",
+    "check_name": "no_simultaneous_ess_charge_discharge_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_ch_and_dis_gt_0.5kw",
+    "message": "ESS 充、放电功率同时大于阈值的时段数。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "test_single",
+    "check_name": "ev_fleet_ch_dis_positive_slots_reference",
+    "pass_flag": "not_applicable",
+    "value": 1,
+    "threshold": "informational",
+    "message": "车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "test_single",
+    "check_name": "pv_curtail_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "弃光功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "test_single",
+    "check_name": "load_shed_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "切负荷功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "test_single",
+    "check_name": "building_recover_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "建筑恢复功率最小值（p2/p1 协同时序）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_base",
+    "check_name": "solver_status_optimal",
+    "pass_flag": "pass",
+    "value": "Optimal",
+    "threshold": "Optimal",
+    "message": "CBC / PuLP 状态标签。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_base",
+    "check_name": "objective_abs_gap_small",
+    "pass_flag": "pass",
+    "value": 1.1823431123048067e-11,
+    "threshold": "<= 0.02",
+    "message": "目标重算与求解器目标绝对差（元）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_base",
+    "check_name": "ess_energy_within_bounds",
+    "pass_flag": "pass",
+    "value": {
+      "violations_below": 0,
+      "violations_above": 0,
+      "e_min": 119.99999962500016,
+      "e_max": 1079.9999996249999
+    },
+    "threshold": {
+      "min_kwh": 120.0,
+      "max_kwh": 1080.0,
+      "tol_kwh": 1.0
+    },
+    "message": "由时序功率与 ess_params 递推的 SOC 是否越界。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_base",
+    "check_name": "ev_departure_demand_met",
+    "pass_flag": "not_applicable",
+    "value": null,
+    "threshold": null,
+    "message": "p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_base",
+    "check_name": "no_simultaneous_grid_buy_sell_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_buy_and_sell_gt_1.0kw",
+    "message": "购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_base",
+    "check_name": "no_simultaneous_ess_charge_discharge_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_ch_and_dis_gt_0.5kw",
+    "message": "ESS 充、放电功率同时大于阈值的时段数。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_base",
+    "check_name": "ev_fleet_ch_dis_positive_slots_reference",
+    "pass_flag": "not_applicable",
+    "value": 0,
+    "threshold": "informational",
+    "message": "车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_base",
+    "check_name": "pv_curtail_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "弃光功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_base",
+    "check_name": "load_shed_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "切负荷功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_base",
+    "check_name": "building_recover_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "建筑恢复功率最小值（p2/p1 协同时序）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_evhet",
+    "check_name": "solver_status_optimal",
+    "pass_flag": "pass",
+    "value": "Optimal",
+    "threshold": "Optimal",
+    "message": "CBC / PuLP 状态标签。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_evhet",
+    "check_name": "objective_abs_gap_small",
+    "pass_flag": "pass",
+    "value": 3.728928277269006e-11,
+    "threshold": "<= 0.02",
+    "message": "目标重算与求解器目标绝对差（元）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_evhet",
+    "check_name": "ess_energy_within_bounds",
+    "pass_flag": "pass",
+    "value": {
+      "violations_below": 0,
+      "violations_above": 0,
+      "e_min": 119.99999962500016,
+      "e_max": 1079.9999996249999
+    },
+    "threshold": {
+      "min_kwh": 120.0,
+      "max_kwh": 1080.0,
+      "tol_kwh": 1.0
+    },
+    "message": "由时序功率与 ess_params 递推的 SOC 是否越界。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_evhet",
+    "check_name": "ev_departure_demand_met",
+    "pass_flag": "not_applicable",
+    "value": null,
+    "threshold": null,
+    "message": "p2 单次目录未导出逐会话 demand_met；请用专门后处理或 baseline 对比。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_evhet",
+    "check_name": "no_simultaneous_grid_buy_sell_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_buy_and_sell_gt_1.0kw",
+    "message": "购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_evhet",
+    "check_name": "no_simultaneous_ess_charge_discharge_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_ch_and_dis_gt_0.5kw",
+    "message": "ESS 充、放电功率同时大于阈值的时段数。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_evhet",
+    "check_name": "ev_fleet_ch_dis_positive_slots_reference",
+    "pass_flag": "not_applicable",
+    "value": 0,
+    "threshold": "informational",
+    "message": "车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_evhet",
+    "check_name": "pv_curtail_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "弃光功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_evhet",
+    "check_name": "load_shed_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "切负荷功率最小值。"
+  },
+  {
+    "model_name": "p2_lifecycle",
+    "run_tag": "verify_evhet",
+    "check_name": "building_recover_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "建筑恢复功率最小值（p2/p1 协同时序）。"
+  },
+  {
+    "model_name": "p1_coordinated",
+    "run_tag": "p1_ultimate_latest",
+    "check_name": "solver_status_optimal",
+    "pass_flag": "not_applicable",
+    "value": null,
+    "threshold": null,
+    "message": "p1 脚本未写入求解器状态文件。"
+  },
+  {
+    "model_name": "p1_coordinated",
+    "run_tag": "p1_ultimate_latest",
+    "check_name": "objective_abs_gap_small",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": "<= 0.02",
+    "message": "由全周或附录对账表两目标行差分。"
+  },
+  {
+    "model_name": "p1_coordinated",
+    "run_tag": "p1_ultimate_latest",
+    "check_name": "ess_energy_within_bounds",
+    "pass_flag": "pass",
+    "value": {
+      "violations_below": 0,
+      "violations_above": 0
+    },
+    "threshold": {
+      "min_kwh": 120.0,
+      "max_kwh": 1080.0
+    },
+    "message": "由 p1 时序递推 ESS 能量。"
+  },
+  {
+    "model_name": "p1_coordinated",
+    "run_tag": "p1_ultimate_latest",
+    "check_name": "ev_departure_demand_met",
+    "pass_flag": "not_applicable",
+    "value": null,
+    "threshold": null,
+    "message": "p1 未在本次导出逐会话离场标志。"
+  },
+  {
+    "model_name": "p1_coordinated",
+    "run_tag": "p1_ultimate_latest",
+    "check_name": "no_simultaneous_grid_buy_sell_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_buy_and_sell_gt_1.0kw",
+    "message": "购、售电功率同时大于阈值的时段数（互斥或数值应接近 0）。"
+  },
+  {
+    "model_name": "p1_coordinated",
+    "run_tag": "p1_ultimate_latest",
+    "check_name": "no_simultaneous_ess_charge_discharge_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_slots_ch_and_dis_gt_0.5kw",
+    "message": "ESS 充、放电功率同时大于阈值的时段数。"
+  },
+  {
+    "model_name": "p1_coordinated",
+    "run_tag": "p1_ultimate_latest",
+    "check_name": "ev_fleet_ch_dis_positive_slots_reference",
+    "pass_flag": "not_applicable",
+    "value": 0,
+    "threshold": "informational",
+    "message": "车队总充与总放同时为正可能来自不同车辆；非单车 V2B 互斥违反判据。"
+  },
+  {
+    "model_name": "p1_coordinated",
+    "run_tag": "p1_ultimate_latest",
+    "check_name": "pv_curtail_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "弃光功率最小值。"
+  },
+  {
+    "model_name": "p1_coordinated",
+    "run_tag": "p1_ultimate_latest",
+    "check_name": "load_shed_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "切负荷功率最小值。"
+  },
+  {
+    "model_name": "p1_coordinated",
+    "run_tag": "p1_ultimate_latest",
+    "check_name": "building_recover_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "建筑恢复功率最小值（p2/p1 协同时序）。"
+  },
+  {
+    "model_name": "baseline_noncooperative",
+    "run_tag": "baseline_default",
+    "check_name": "solver_status_optimal",
+    "pass_flag": "not_applicable",
+    "value": null,
+    "threshold": null,
+    "message": "baseline 为规则仿真，无 MILP 状态。"
+  },
+  {
+    "model_name": "baseline_noncooperative",
+    "run_tag": "baseline_default",
+    "check_name": "objective_abs_gap_small",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": "<= 0.02",
+    "message": "baseline 对账表两目标行。"
+  },
+  {
+    "model_name": "baseline_noncooperative",
+    "run_tag": "baseline_default",
+    "check_name": "ess_energy_within_bounds",
+    "pass_flag": "pass",
+    "value": {
+      "violations_below": 0,
+      "violations_above": 0,
+      "e_min": 120.0,
+      "e_max": 600.0
+    },
+    "threshold": {
+      "min_kwh": 120.0,
+      "max_kwh": 1080.0
+    },
+    "message": "baseline 时序 ess_energy_kwh 与参数上下界。"
+  },
+  {
+    "model_name": "baseline_noncooperative",
+    "run_tag": "baseline_default",
+    "check_name": "ev_departure_demand_met",
+    "pass_flag": "fail",
+    "value": {
+      "sessions_unmet": 2,
+      "n_sessions": 102
+    },
+    "threshold": "sessions_unmet == 0",
+    "message": "baseline 离站需求满足标志。"
+  },
+  {
+    "model_name": "baseline_noncooperative",
+    "run_tag": "baseline_default",
+    "check_name": "no_simultaneous_grid_buy_sell_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_gt_1.0kw",
+    "message": "baseline 使用 grid_import_kw / grid_export_kw。"
+  },
+  {
+    "model_name": "baseline_noncooperative",
+    "run_tag": "baseline_default",
+    "check_name": "no_simultaneous_ess_charge_discharge_slots",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "count_gt_0.5kw",
+    "message": "baseline ESS 同时充放。"
+  },
+  {
+    "model_name": "baseline_noncooperative",
+    "run_tag": "baseline_default",
+    "check_name": "ev_fleet_ch_dis_positive_slots_reference",
+    "pass_flag": "not_applicable",
+    "value": null,
+    "threshold": null,
+    "message": "baseline EV 仅充电，跳过车队参考项。"
+  },
+  {
+    "model_name": "baseline_noncooperative",
+    "run_tag": "baseline_default",
+    "check_name": "pv_curtail_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "弃光（baseline 列名 pv_curtailed_kw）。"
+  },
+  {
+    "model_name": "baseline_noncooperative",
+    "run_tag": "baseline_default",
+    "check_name": "load_shed_non_negative",
+    "pass_flag": "pass",
+    "value": 0.0,
+    "threshold": ">= -1e-06",
+    "message": "未供电功率非负。"
+  },
+  {
+    "model_name": "baseline_noncooperative",
+    "run_tag": "baseline_default",
+    "check_name": "building_recover_non_negative",
+    "pass_flag": "not_applicable",
+    "value": null,
+    "threshold": null,
+    "message": "baseline 无建筑恢复列。"
+  },
+  {
+    "model_name": "p2_weight_scan",
+    "run_tag": "scan_verify",
+    "check_name": "scan_rows_objective_finite",
+    "pass_flag": "pass",
+    "value": 0,
+    "threshold": "error_or_nan_count == 0",
+    "message": "扫描行中 objective_recomputed 为 NaN 或 solver_status=error 计数。"
+  },
+  {
+    "model_name": "p2_weight_scan",
+    "run_tag": "scan_verify",
+    "check_name": "scan_trend_ev_deg_vs_weight",
+    "pass_flag": "pass",
+    "value": 1.0,
+    "threshold": "Spearman(rho) >= -0.3",
+    "message": "ev_deg_cost 随退化权重应总体不呈强负相关（启发式稳健性）。"
+  }
+]
