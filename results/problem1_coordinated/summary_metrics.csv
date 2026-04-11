@@ -1,0 +1,2 @@
+﻿objective_cny,total_import_energy_mwh,total_export_energy_mwh,total_curtailment_energy_mwh,total_unserved_energy_mwh,peak_import_kw,peak_export_kw,n_periods,delta_t_hours
+1729.3632236842102,3.698118421052631,0.0,0.0,0.0,683.0,0.0,48,0.25

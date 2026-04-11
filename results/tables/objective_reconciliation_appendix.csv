@@ -1,0 +1,13 @@
+﻿项,数值（元）
+Grid import cost,940.5795
+Grid export revenue,0.0000
+PV curtailment penalty,0.0000
+Load shed penalty,0.0000
+Building shift penalty,0.0000
+ESS degradation cost,0.0000
+EV degradation cost,0.0000
+Carbon cost,0.0000
+Objective affine constant,1.3375
+Objective from solver,940.5795
+Objective recomputed from solution,940.5795
+Objective shown in CBC log style,939.2420

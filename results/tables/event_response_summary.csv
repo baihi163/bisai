@@ -1,0 +1,4 @@
+﻿event_id,window_start,window_end,scenario_note,n_periods_in_window,total_grid_import_kwh,peak_grid_import_kw,total_grid_export_kwh,total_ess_discharge_kwh,total_ev_discharge_kwh,total_building_flex_energy_kwh,total_load_shed_kwh,total_pv_curtail_kwh,warning
+stress_event_1,2025-07-16T11:00:00,2025-07-16T14:00:00,low irradiance due to storm clouds,12,1573.6555074999999,562.754,0.0,0.0,0.0,238.48049999999998,0.0,0.0,
+stress_event_2,2025-07-17T13:00:00,2025-07-17T16:00:00,grid import limit reduced to 650 kW,12,1181.9562975,571.98947,0.0,0.0,0.0,229.5865,0.0,0.0,
+stress_event_3,2025-07-18T17:00:00,2025-07-18T19:00:00,grid import limit reduced to 700 kW during evening peak,8,244.85600000000002,169.102,0.0,600.0,70.995,233.54899999999998,0.0,0.0,

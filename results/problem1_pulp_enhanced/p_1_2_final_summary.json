@@ -1,0 +1,31 @@
+{
+  "num_periods": 672,
+  "time_step_hours": 0.25,
+  "total_operating_cost_cny": 38200.19842,
+  "total_grid_import_kwh": 64829.9522,
+  "total_grid_export_kwh": 0.0,
+  "total_pv_curtailment_kwh": 0.0,
+  "total_load_shed_kwh": 0.0,
+  "peak_grid_import_kw": 855.2,
+  "pv_self_utilization_rate": 1.0,
+  "pv_self_utilization_rate_note": "sum(max(pv_t - P_curtail_t, 0) * dt) / sum(pv_t * dt)",
+  "total_ev_charge_kwh": 2668.3546,
+  "total_ev_discharge_kwh": 562.245,
+  "total_building_flex_gross_shift_kwh": 22320.0,
+  "total_building_flex_gross_shift_note": "sum((P_shift_up + P_shift_down) * dt) when available",
+  "ev_sessions_modeled": 100,
+  "ev_sessions_skipped": 2,
+  "ev_sessions_included_fraction_of_csv": 0.980392,
+  "ev_min_departure_soc_gap_kwh": 0.0,
+  "ev_departure_target_met_rate_modeled": 1.0,
+  "ev_demand_satisfaction_rate": 1.0,
+  "ev_demand_satisfaction_rate_note": "在已建模 EV 上，末时刻电量相对离站目标的满足比例（最优解下通常为 1）",
+  "ev_skip_reason_counts": {
+    "insufficient_charging_capacity_to_reach_departure_target": 2
+  },
+  "ev_skipped_session_ids": [
+    "S091",
+    "S102"
+  ],
+  "solver_status": "Optimal"
+}

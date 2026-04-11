@@ -1,0 +1,9 @@
+{
+  "total_grid_import_kwh": 9694.7981,
+  "total_grid_export_kwh": 0.0,
+  "total_ess_charge_kwh": 1010.5263,
+  "total_ess_discharge_kwh": 912.0,
+  "peak_grid_import_kw": 835.4,
+  "objective_value_cny": 6082.5375,
+  "solver_status": "Optimal"
+}

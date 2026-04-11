@@ -1,0 +1,22 @@
+[
+  {
+    "session_id": "S091",
+    "matrix_col": "ev_92",
+    "reason": "required_increment_exceeds_slot_charge_upper_bound",
+    "initial_kwh": 10.8,
+    "required_kwh_csv": 38.1,
+    "required_kwh_modeled": 38.1,
+    "capacity_kwh": 60.0,
+    "max_chargeable_gain_kwh": 26.125
+  },
+  {
+    "session_id": "S102",
+    "matrix_col": "ev_96",
+    "reason": "required_increment_exceeds_slot_charge_upper_bound",
+    "initial_kwh": 13.5,
+    "required_kwh_csv": 61.7,
+    "required_kwh_modeled": 61.7,
+    "capacity_kwh": 75.0,
+    "max_chargeable_gain_kwh": 23.275
+  }
+]
