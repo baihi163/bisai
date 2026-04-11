@@ -139,61 +139,38 @@ $$
 \min F
 $$
 
-为增强公式可读性，本文将总目标函数写为分项成本之和：
+为增强公式可读性，本文将总目标函数表示为各分项成本之和：
 
 $$
 \min F = C_{\mathrm{grid}} + C_{\mathrm{CO2}} + C_{\mathrm{curt}} + C_{\mathrm{ess}}^{\mathrm{deg}} + C_{\mathrm{flex}} + C_{\mathrm{ev}}^{\mathrm{deg}}
 $$
 
-其中各分项定义如下。
+其中，各分项成本定义如下。
 
-#### （1）购售电净成本
+#### （1）购售电净成本 $$C_{\mathrm{grid}}$$
 
-$$
-C_{\mathrm{grid}} = \sum_{t=1}^{T}\left(c_t^{buy}P_t^{buy} - c_t^{sell}P_t^{sell}\right)\Delta t
-$$
+该项表示园区与主电网之间的净购电成本，由购电支出扣除售电收益得到。其计算基于各时段购电功率 $$P_t^{buy}$$、售电功率 $$P_t^{sell}$$ 以及对应电价 $$c_t^{buy}$$ 和 $$c_t^{sell}$$。
 
-该项反映园区从主电网购电的支出与向主电网售电的收益。
+#### （2）碳排放成本 $$C_{\mathrm{CO2}}$$
 
-#### （2）碳排放成本
+该项反映园区购电行为带来的碳排放经济代价，依据各时段购电功率 $$P_t^{buy}$$、电网碳排放因子 $$\gamma_t$$ 与单位碳成本 $$c^{CO_2}$$ 计算。
 
-$$
-C_{\mathrm{CO2}} = \sum_{t=1}^{T} c^{CO_2}\gamma_t P_t^{buy}\Delta t
-$$
+#### （3）弃光惩罚成本 $$C_{\mathrm{curt}}$$
 
-该项用于体现购电行为对应的碳排放经济代价。
+该项用于惩罚可利用光伏未被消纳的情形。其大小与光伏可用功率上限 $$\bar P_t^{pv}$$、实际利用功率 $$P_t^{\mathrm{pv}}$$ 以及弃光惩罚系数 $$c^{curt}$$ 有关。
 
-#### （3）弃光惩罚成本
+#### （4）固定储能退化成本 $$C_{\mathrm{ess}}^{\mathrm{deg}}$$
 
-$$
-C_{\mathrm{curt}} = \sum_{t=1}^{T} c^{curt}\left(\bar P_t^{pv} - P_t^{\mathrm{pv}}\right)\Delta t
-$$
+该项用于刻画固定储能在充放电过程中的寿命损耗成本，依据储能充电功率 $$P_{t,\mathrm{ch}}^{\mathrm{ess}}$$、放电功率 $$P_{t,\mathrm{dis}}^{\mathrm{ess}}$$、单位退化成本 $$c^{deg,ess}$$ 以及时间步长 $$\Delta t$$ 进行折算。
 
-该项用于惩罚可利用光伏未被消纳的情形，以鼓励提高新能源利用率。
+#### （5）建筑柔性负荷调节成本 $$C_{\mathrm{flex}}$$
 
-#### （4）固定储能退化成本
+该项包括建筑负荷平移、恢复以及削减所带来的调节代价。其中，平移与恢复部分由补偿系数 $$c^{shift}$$ 计价，削减部分由未供电惩罚系数 $$c_b^{shed}$$ 计价。
 
-$$
-C_{\mathrm{ess}}^{\mathrm{deg}} = \sum_{t=1}^{T} c^{deg,ess}\frac{P_{t,\mathrm{ch}}^{\mathrm{ess}} + P_{t,\mathrm{dis}}^{\mathrm{ess}}}{2}\Delta t
-$$
+#### （6）EV 电池退化成本 $$C_{\mathrm{ev}}^{\mathrm{deg}}$$
 
-该项用于抑制固定储能的高频充放电行为。
+该项用于刻画 EV 参与调度所引起的电池寿命损耗成本。其大小与 EV 充电功率 $$P_{i,t,\mathrm{ch}}^{\mathrm{ev}}$$、放电功率 $$P_{i,t,\mathrm{dis}}^{\mathrm{ev}}$$、单位退化成本 $$c_i^{deg,ev}$$ 及在站时段集合 $$\mathcal{T}_i$$ 有关。
 
-#### （5）建筑柔性负荷调节成本
-
-$$
-C_{\mathrm{flex}} = \sum_{b \in \mathcal{B}} \sum_{t=1}^{T} \left[ c^{shift}(P_{b,t}^{shift}+P_{b,t}^{rec}) + c_b^{shed}P_{b,t}^{shed} \right]\Delta t
-$$
-
-该项包括建筑负荷平移、恢复以及削减带来的调节代价。
-
-#### （6）EV 电池退化成本
-
-$$
-C_{\mathrm{ev}}^{\mathrm{deg}} = \sum_{i \in \mathcal{E}} \sum_{t \in \mathcal{T}_i} c_i^{deg,ev}\frac{P_{i,t,\mathrm{ch}}^{\mathrm{ev}} + P_{i,t,\mathrm{dis}}^{\mathrm{ev}}}{2}\Delta t
-$$
-
-该项用于刻画 EV 参与调度所引起的电池寿命损耗成本，从而避免过度调用 EV 参与园区能量平衡。
 
 
 ### 4.2 目标函数各项含义
