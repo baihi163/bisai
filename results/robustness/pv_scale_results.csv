@@ -1,0 +1,7 @@
+﻿scenario,model,pv_scale,operation_cost,renewable_consumption_ratio,pv_curtail_energy_kwh,grid_import_energy_kwh,solver_status
+pv_scale,baseline,0.9,7362.318189130434,1.0,0.0,9517.9571,
+pv_scale,coordinated,0.9,6864.952831924999,1.0,8.881784197001252e-14,10097.792632499999,Optimal
+pv_scale,baseline,1.0,7074.662489130436,1.0,0.0,9131.4946,
+pv_scale,coordinated,1.0,6577.297131925,1.0,0.0,9711.3301325,Optimal
+pv_scale,baseline,1.1,6787.006789130435,1.0,0.0,8745.0321,
+pv_scale,coordinated,1.1,6289.6414319250025,1.0,2.8954616482224083e-13,9324.8676325,Optimal

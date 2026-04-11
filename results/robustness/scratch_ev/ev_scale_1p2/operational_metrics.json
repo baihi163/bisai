@@ -1,0 +1,13 @@
+{
+  "grid_import_energy_kwh": 9711.9459275,
+  "grid_export_energy_kwh": 0.0,
+  "pv_curtail_energy_kwh": 0.0,
+  "ess_charge_energy_kwh": 1010.526315,
+  "ess_discharge_energy_kwh": 912.0,
+  "ess_throughput_kwh": 961.2631575,
+  "ev_charge_energy_kwh": 562.4210525800015,
+  "ev_discharge_energy_kwh": 120.07999999999991,
+  "ev_throughput_kwh": 341.2505262900007,
+  "load_shed_energy_kwh": 0.0,
+  "unserved_energy_note": "当前目标含削减惩罚 P_shed（kWh 当量），无独立‘潮流不可达未供电’变量；若需支路未供电需扩展网络约束。"
+}

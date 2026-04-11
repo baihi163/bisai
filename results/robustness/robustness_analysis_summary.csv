@@ -1,0 +1,25 @@
+﻿parameter,scenario,metric,raw_value,relative_change_pct,baseline_reference
+pv_scale=0.9,baseline,operation_cost,7362.318189130434,0.0,pv_scale=1.0 baseline operation_cost
+pv_scale=0.9,coordinated,operation_cost,6864.952831924999,4.3734636619010425,pv_scale=1.0 coordinated operation_cost
+pv_scale=0.9,baseline,grid_import_energy_kwh,9517.9571,0.0,pv_scale=1.0 baseline grid_import_energy_kwh
+pv_scale=0.9,coordinated,grid_import_energy_kwh,10097.7926325,3.9795012086620716,pv_scale=1.0 coordinated grid_import_energy_kwh
+pv_scale=0.9,baseline,renewable_consumption_ratio,1.0,0.0,pv_scale=1.0 baseline renewable_consumption_ratio
+pv_scale=0.9,coordinated,renewable_consumption_ratio,1.0,0.0,pv_scale=1.0 coordinated renewable_consumption_ratio
+pv_scale=0.9,improvement_cost_pct,improvement_cost_pct,6.755553677912671,6.755553677912671,(baseline−协同)/baseline×100
+pv_scale=0.9,improvement_grid_pct,improvement_grid_pct,-6.092016662903442,-6.092016662903442,(baseline−协同)/baseline×100
+pv_scale=1.0,baseline,operation_cost,7074.662489130436,0.0,pv_scale=1.0 baseline operation_cost
+pv_scale=1.0,coordinated,operation_cost,6577.297131925,0.0,pv_scale=1.0 coordinated operation_cost
+pv_scale=1.0,baseline,grid_import_energy_kwh,9131.4946,0.0,pv_scale=1.0 baseline grid_import_energy_kwh
+pv_scale=1.0,coordinated,grid_import_energy_kwh,9711.3301325,0.0,pv_scale=1.0 coordinated grid_import_energy_kwh
+pv_scale=1.0,baseline,renewable_consumption_ratio,1.0,0.0,pv_scale=1.0 baseline renewable_consumption_ratio
+pv_scale=1.0,coordinated,renewable_consumption_ratio,1.0,0.0,pv_scale=1.0 coordinated renewable_consumption_ratio
+pv_scale=1.0,improvement_cost_pct,improvement_cost_pct,7.030234417113072,7.030234417113072,(baseline−协同)/baseline×100
+pv_scale=1.0,improvement_grid_pct,improvement_grid_pct,-6.349842582177066,-6.349842582177066,(baseline−协同)/baseline×100
+pv_scale=1.1,baseline,operation_cost,6787.006789130435,0.0,pv_scale=1.0 baseline operation_cost
+pv_scale=1.1,coordinated,operation_cost,6289.6414319250025,-4.373463661901015,pv_scale=1.0 coordinated operation_cost
+pv_scale=1.1,baseline,grid_import_energy_kwh,8745.0321,0.0,pv_scale=1.0 baseline grid_import_energy_kwh
+pv_scale=1.1,coordinated,grid_import_energy_kwh,9324.8676325,-3.979501208662053,pv_scale=1.0 coordinated grid_import_energy_kwh
+pv_scale=1.1,baseline,renewable_consumption_ratio,1.0,0.0,pv_scale=1.0 baseline renewable_consumption_ratio
+pv_scale=1.1,coordinated,renewable_consumption_ratio,1.0,0.0,pv_scale=1.0 coordinated renewable_consumption_ratio
+pv_scale=1.1,improvement_cost_pct,improvement_cost_pct,7.328198905030948,7.328198905030948,(baseline−协同)/baseline×100
+pv_scale=1.1,improvement_grid_pct,improvement_grid_pct,-6.6304563078733505,-6.6304563078733505,(baseline−协同)/baseline×100
