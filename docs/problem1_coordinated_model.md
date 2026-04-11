@@ -73,7 +73,7 @@
 | $\underline{E}_{\mathrm{ess}},\,\overline{E}_{\mathrm{ess}}$ | 储能能量下、上界 |
 | $E_{\mathrm{ess},0}$ | 调度初始储能能量 |
 
-**会话活跃性**：定义指示参数 $\chi_{v,t}\in\{0,1\}$：若时段 $t$ 内会话 $v$ 处于在站停车状态则 $\chi_{v,t}=1$，否则为 $0$。具体区间规则可与附件一致，例如 $t\in\{t^{\mathrm{arr}}_v,\ldots,t^{\mathrm{dep}}_v-1\}$ 或闭区间，全文保持一致即可。
+**会话活跃性**：定义指示参数 $\chi_{v,t}\in\{0,1\}$：若时段 $t$ 内会话 $v$ 处于在站停车状态则 $\chi_{v,t}=1$，否则为 $0$。具体区间规则可与附件一致，例如 $t\in\{t^{\mathrm{arr}}_v,\ldots,t^{\mathrm{dep}}_v - 1\}$ 或闭区间，全文保持一致即可。
 
 ### 4.3 辅助：建筑总负荷与光伏分配
 
@@ -161,7 +161,7 @@ $$
 调整量满足（示例）盒约束与可选爬坡：
 
 $$
-\underline{P}^{\mathrm{flex}}_{b,t} \leq \Delta P^{\mathrm{flex}}_{b,t} \leq \overline{P}^{\mathrm{flex}}_{b,t},
+\underline{P}^{\mathrm{flex}}_{b,t} \leq \Delta P^{\mathrm{flex}}_{b,t} \leq \overline{P}^{\mathrm{flex}}_{b,t}
 $$
 
 $$
@@ -226,15 +226,15 @@ $$
 $$
 E_{v,t} = E_{v,t-1}
 + \eta^{\mathrm{ch}}_{v}\,P^{\mathrm{ev,ch}}_{v,t}\,\Delta t
-- \frac{1}{\eta^{\mathrm{dis}}_{v}}\,P^{\mathrm{ev,dis}}_{v,t}\,\Delta t,
+- \frac{1}{\eta^{\mathrm{dis}}_{v}}\,P^{\mathrm{ev,dis}}_{v,t}\,\Delta t
 $$
 
-（效率 $\eta^{\mathrm{ch}}_{v},\eta^{\mathrm{dis}}_{v}$ 为参数；若不计损耗可取 1。）初值 $E_{v,t^{\mathrm{arr}}_v-1}=E^{\mathrm{arr}}_v$（按索引约定对齐）。
+（效率 $\eta^{\mathrm{ch}}_{v},\eta^{\mathrm{dis}}_{v}$ 为参数；若不计损耗可取 1。）初值 $E_{v,\,t^{\mathrm{arr}}_v - 1}=E^{\mathrm{arr}}_v$（按索引约定对齐）。
 
 **离站最低需求**（在 $t^{\mathrm{dep}}_v$ 离开前末段能量满足）：
 
 $$
-E_{v,t^{\mathrm{dep}}_v-1} \geq E^{\mathrm{req}}_v
+E_{v,\,t^{\mathrm{dep}}_v - 1} \geq E^{\mathrm{req}}_v
 $$
 
 （具体对齐 $t^{\mathrm{dep}}_v$ 为离开时段起点还是终点时，能量不等式写法与 $\chi_{v,t}$ 一致即可。）

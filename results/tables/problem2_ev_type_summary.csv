@@ -1,0 +1,4 @@
+﻿ev_type,vehicle_count,mean_battery_capacity_kwh,mean_initial_energy_kwh,mean_required_departure_energy_kwh,mean_initial_soc,mean_target_departure_soc,mean_energy_replenishment_need_kwh,mean_relative_replenishment_need,mean_parking_duration_h,mean_max_charge_power_kw,mean_max_discharge_power_kw,v2b_allowed_share,mean_degradation_cost_cny_per_kwh_throughput,min_degradation_cost_cny_per_kwh_throughput,max_degradation_cost_cny_per_kwh_throughput,std_degradation_cost_cny_per_kwh_throughput
+compact,40,50.0,22.85,40.68,0.457,0.814,17.83,0.357,8.75,8.6,5.475,0.675,0.1005,0.093,0.108,0.0043
+sedan,30,60.0,29.96,47.987,0.499,0.8,18.027,0.3,7.883,8.467,6.033,0.7333,0.0884,0.078,0.099,0.0054
+SUV,32,75.0,36.078,59.972,0.481,0.8,23.894,0.319,8.594,8.875,5.281,0.5938,0.0706,0.06,0.078,0.0046
