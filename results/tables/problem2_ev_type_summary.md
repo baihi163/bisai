@@ -26,7 +26,7 @@
 ## 与论文写作的衔接
 
 - 若各车型在**容量、SOC 轨迹、补能需求、V2B 占比、退化成本**上差异明显，可在问题 2 正文中设置「分车型描述性统计」小节，并在寿命损耗建模中讨论**是否按车型设定 EV 吞吐退化系数或约束分工**。
-- 图形文件见 `results/figures/problem2/` 下 `ev_type_capacity_degradation.png` 与 `ev_type_v2b_ratio.png`。
+- 图形文件见 `results/figures/problem2/`：基础图为 `ev_type_capacity_degradation.png`、`ev_type_v2b_ratio.png`；论文正文推荐 `ev_type_capacity_degradation_polished` / `ev_type_v2b_ratio_polished` / `ev_type_heterogeneity_panel`（各含 `.png`、`.pdf`、`.svg`）。
 
 ## 可供论文正文引用的表述（数据驱动）
 

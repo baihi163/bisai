@@ -2,7 +2,7 @@
 问题 2：按车型（compact / sedan / SUV）对 EV 会话做异质性统计与作图。
 
 输入：ev_sessions_model_ready.csv（默认）或 ev_sessions.csv（需含相同核心列）。
-输出：汇总表 CSV/Markdown + 两张论文用图。
+输出：汇总表 CSV/Markdown + 基础图 + 论文风格图（高分辨率 PNG，同 stem 的 PDF/SVG）。
 """
 
 from __future__ import annotations
@@ -64,6 +64,210 @@ def setup_matplotlib_zh() -> None:
             "grid.alpha": 0.35,
         }
     )
+
+
+# 论文风格（低饱和、统一色系；用于 polished 图）
+PAPER = {
+    "cap_bar": "#8FAAB8",  # 柱：平均容量
+    "cap_edge": "#5F7380",
+    "deg_line": "#B87D6F",  # 折线：退化成本
+    "deg_marker": "#9E5E52",
+    "v2b_bar": "#9AAFA0",  # 横向条：V2B
+    "v2b_edge": "#6E7F72",
+    "grid": "#D8DDE2",
+    "text_muted": "#4A4F55",
+}
+
+
+def apply_matplotlib_paper_style() -> None:
+    """低饱和论文风；仅影响后续新建图形。"""
+    plt.rcParams.update(
+        {
+            "figure.dpi": 120,
+            "savefig.dpi": 300,
+            "font.sans-serif": ["Microsoft YaHei", "Noto Sans CJK SC", "SimHei", "Arial Unicode MS", "DejaVu Sans"],
+            "axes.unicode_minus": False,
+            "axes.grid": False,
+            "axes.edgecolor": "#3A3F45",
+            "axes.linewidth": 0.9,
+            "axes.titlesize": 12,
+            "axes.labelsize": 10.5,
+            "xtick.labelsize": 10,
+            "ytick.labelsize": 10,
+            "legend.fontsize": 9,
+        }
+    )
+
+
+def _ordered_plot_subframe(summary: pd.DataFrame) -> pd.DataFrame:
+    """按 TYPE_ORDER 重排，仅含三车型；若无数据返回空表。"""
+    sub = summary[summary["ev_type"].isin(TYPE_ORDER)].copy()
+    if sub.empty:
+        return sub
+    sub = sub.set_index("ev_type").reindex(TYPE_ORDER).reset_index()
+    sub["label_zh"] = sub["ev_type"].map(TYPE_LABEL_ZH)
+    sub = sub.dropna(subset=["mean_battery_capacity_kwh"], how="any")
+    return sub
+
+
+def save_figure_paper_formats(fig, png_path: Path) -> None:
+    """PNG（≥300 dpi）+ PDF + SVG，路径与 png_path 同 stem。"""
+    png_path = png_path.resolve()
+    png_path.parent.mkdir(parents=True, exist_ok=True)
+    stem = png_path.with_suffix("")
+    fig.savefig(png_path, dpi=300, bbox_inches="tight", facecolor="white", edgecolor="none")
+    fig.savefig(stem.with_suffix(".pdf"), bbox_inches="tight", facecolor="white", edgecolor="none")
+    fig.savefig(stem.with_suffix(".svg"), bbox_inches="tight", facecolor="white", edgecolor="none")
+    plt.close(fig)
+
+
+def plot_capacity_degradation_polished(summary: pd.DataFrame, png_path: Path) -> None:
+    """图1：柱（容量）+ 折线（退化成本），论文风格。"""
+    apply_matplotlib_paper_style()
+    sub = _ordered_plot_subframe(summary)
+    if sub.empty:
+        return
+    x = np.arange(len(sub))
+    labels = list(sub["label_zh"].astype(str))
+    caps = sub["mean_battery_capacity_kwh"].to_numpy(dtype=float)
+    degs = sub["mean_degradation_cost_cny_per_kwh_throughput"].to_numpy(dtype=float)
+
+    fig, ax1 = plt.subplots(figsize=(6.4, 4.2), layout="constrained")
+    w = 0.52
+    bars = ax1.bar(x, caps, width=w, color=PAPER["cap_bar"], edgecolor=PAPER["cap_edge"], linewidth=0.6, zorder=2, label="平均电池容量")
+    ax1.set_xticks(x, labels)
+    ax1.set_xlabel("车型")
+    ax1.set_ylabel("平均电池容量（kWh）", color=PAPER["text_muted"])
+    ax1.tick_params(axis="y", colors=PAPER["text_muted"])
+    ax1.set_ylim(0, float(np.max(caps)) * 1.22)
+    ax1.grid(True, axis="y", color=PAPER["grid"], linestyle=(0, (1, 3)), linewidth=0.85, alpha=1.0, zorder=0)
+    ax1.set_axisbelow(True)
+    ax1.spines["top"].set_visible(False)
+
+    for rect, v in zip(bars, caps):
+        ax1.text(
+            rect.get_x() + rect.get_width() / 2,
+            rect.get_height() + float(np.max(caps)) * 0.02,
+            f"{v:.1f}",
+            ha="center",
+            va="bottom",
+            fontsize=9.5,
+            color=PAPER["text_muted"],
+        )
+
+    ax2 = ax1.twinx()
+    ax2.plot(x, degs, "o-", color=PAPER["deg_line"], lw=2.0, ms=7, mfc="white", mec=PAPER["deg_marker"], mew=1.2, zorder=3, label="平均吞吐退化成本")
+    ax2.set_ylabel("平均吞吐退化成本（元/kWh）", color=PAPER["deg_line"])
+    ax2.tick_params(axis="y", colors=PAPER["deg_line"])
+    dmax = float(np.max(degs))
+    dmin = float(np.min(degs))
+    pad = max(0.008, (dmax - dmin) * 0.35) if dmax > dmin else 0.02
+    ax2.set_ylim(max(0, dmin - pad), dmax + pad)
+
+    for xi, yi in zip(x, degs):
+        ax2.text(xi, yi + pad * 0.12, f"{yi:.4f}", ha="center", va="bottom", fontsize=8.8, color=PAPER["deg_marker"])
+
+    ax1.set_title("不同车型 EV 的平均电池容量与单位吞吐退化成本", pad=10)
+    h1, l1 = ax1.get_legend_handles_labels()
+    h2, l2 = ax2.get_legend_handles_labels()
+    ax1.legend(h1 + h2, l1 + l2, loc="upper right", frameon=True, fancybox=False, edgecolor="#D0D4D8", facecolor="#FAFBFC")
+
+    save_figure_paper_formats(fig, png_path)
+
+
+def plot_v2b_ratio_horizontal_polished(summary: pd.DataFrame, png_path: Path) -> None:
+    """图2：横向条形图，V2B 允许比例（%）。"""
+    apply_matplotlib_paper_style()
+    sub = _ordered_plot_subframe(summary)
+    if sub.empty:
+        return
+    labels = list(sub["label_zh"].astype(str))
+    pct = sub["v2b_allowed_share"].to_numpy(dtype=float) * 100.0
+    y = np.arange(len(labels))
+
+    fig, ax = plt.subplots(figsize=(5.8, 3.6), layout="constrained")
+    ax.barh(y, pct, height=0.55, color=PAPER["v2b_bar"], edgecolor=PAPER["v2b_edge"], linewidth=0.55, zorder=2)
+    ax.set_yticks(y, labels)
+    ax.invert_yaxis()
+    ax.set_xlabel("V2B 允许比例（%）")
+    ax.set_title("不同车型 EV 的 V2B 允许比例", pad=10)
+    xmax = max(100.0, float(np.max(pct)) * 1.12)
+    ax.set_xlim(0, xmax)
+    ax.grid(True, axis="x", color=PAPER["grid"], linestyle=(0, (1, 3)), linewidth=0.85, zorder=0)
+    ax.set_axisbelow(True)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    for yi, v in zip(y, pct):
+        ax.text(v + xmax * 0.012, yi, f"{v:.1f}%", va="center", ha="left", fontsize=9.5, color=PAPER["text_muted"])
+
+    save_figure_paper_formats(fig, png_path)
+
+
+def plot_heterogeneity_panel_polished(summary: pd.DataFrame, png_path: Path) -> None:
+    """组合图 (a)(b)，左右子图。"""
+    apply_matplotlib_paper_style()
+    sub = _ordered_plot_subframe(summary)
+    if sub.empty:
+        return
+    x = np.arange(len(sub))
+    labels = list(sub["label_zh"].astype(str))
+    caps = sub["mean_battery_capacity_kwh"].to_numpy(dtype=float)
+    degs = sub["mean_degradation_cost_cny_per_kwh_throughput"].to_numpy(dtype=float)
+    pct = sub["v2b_allowed_share"].to_numpy(dtype=float) * 100.0
+
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(10.8, 4.0), layout="constrained", gridspec_kw={"width_ratios": [1.15, 1.0]})
+
+    w = 0.48
+    bars = ax_a.bar(x, caps, width=w, color=PAPER["cap_bar"], edgecolor=PAPER["cap_edge"], linewidth=0.55, zorder=2, label="平均电池容量")
+    ax_a.set_xticks(x, labels)
+    ax_a.set_xlabel("车型")
+    ax_a.set_ylabel("平均电池容量（kWh）", color=PAPER["text_muted"])
+    ax_a.tick_params(axis="y", colors=PAPER["text_muted"])
+    ax_a.set_ylim(0, float(np.max(caps)) * 1.2)
+    ax_a.grid(True, axis="y", color=PAPER["grid"], linestyle=(0, (1, 3)), linewidth=0.85, zorder=0)
+    ax_a.set_axisbelow(True)
+    ax_a.spines["top"].set_visible(False)
+    for rect, v in zip(bars, caps):
+        ax_a.text(
+            rect.get_x() + rect.get_width() / 2,
+            rect.get_height() + float(np.max(caps)) * 0.02,
+            f"{v:.1f}",
+            ha="center",
+            va="bottom",
+            fontsize=9,
+            color=PAPER["text_muted"],
+        )
+    ax2 = ax_a.twinx()
+    ax2.plot(x, degs, "o-", color=PAPER["deg_line"], lw=1.85, ms=6.5, mfc="white", mec=PAPER["deg_marker"], mew=1.0, zorder=3, label="平均吞吐退化成本")
+    ax2.set_ylabel("平均吞吐退化成本（元/kWh）", color=PAPER["deg_line"])
+    ax2.tick_params(axis="y", colors=PAPER["deg_line"])
+    dmax, dmin = float(np.max(degs)), float(np.min(degs))
+    pad = max(0.008, (dmax - dmin) * 0.35) if dmax > dmin else 0.02
+    ax2.set_ylim(max(0, dmin - pad), dmax + pad)
+    for xi, yi in zip(x, degs):
+        ax2.text(xi, yi + pad * 0.1, f"{yi:.4f}", ha="center", va="bottom", fontsize=8, color=PAPER["deg_marker"])
+    ax_a.set_title("（a）平均电池容量与单位吞吐退化成本", fontsize=11, loc="left", color=PAPER["text_muted"])
+    h1, l1 = ax_a.get_legend_handles_labels()
+    h2, l2 = ax2.get_legend_handles_labels()
+    ax_a.legend(h1 + h2, l1 + l2, loc="upper right", frameon=True, fancybox=False, edgecolor="#D0D4D8", fontsize=8.5)
+
+    yb = np.arange(len(labels))
+    ax_b.barh(yb, pct, height=0.52, color=PAPER["v2b_bar"], edgecolor=PAPER["v2b_edge"], linewidth=0.5, zorder=2)
+    ax_b.set_yticks(yb, labels)
+    ax_b.invert_yaxis()
+    ax_b.set_xlabel("V2B 允许比例（%）")
+    xmax = max(100.0, float(np.max(pct)) * 1.1)
+    ax_b.set_xlim(0, xmax)
+    ax_b.grid(True, axis="x", color=PAPER["grid"], linestyle=(0, (1, 3)), linewidth=0.85, zorder=0)
+    ax_b.set_axisbelow(True)
+    ax_b.spines["top"].set_visible(False)
+    ax_b.spines["right"].set_visible(False)
+    for yi, v in zip(yb, pct):
+        ax_b.text(v + xmax * 0.01, yi, f"{v:.1f}%", va="center", ha="left", fontsize=9, color=PAPER["text_muted"])
+    ax_b.set_title("（b）V2B 允许比例", fontsize=11, loc="left", color=PAPER["text_muted"])
+
+    save_figure_paper_formats(fig, png_path)
 
 
 def load_sessions(path: Path, *, feasible_only: bool, dt_h: float) -> pd.DataFrame:
@@ -329,7 +533,7 @@ def write_markdown_zh(
             "## 与论文写作的衔接",
             "",
             "- 若各车型在**容量、SOC 轨迹、补能需求、V2B 占比、退化成本**上差异明显，可在问题 2 正文中设置「分车型描述性统计」小节，并在寿命损耗建模中讨论**是否按车型设定 EV 吞吐退化系数或约束分工**。",
-            "- 图形文件见 `results/figures/problem2/` 下 `ev_type_capacity_degradation.png` 与 `ev_type_v2b_ratio.png`。",
+            "- 图形文件见 `results/figures/problem2/`：基础图为 `ev_type_capacity_degradation.png`、`ev_type_v2b_ratio.png`；论文正文推荐 `ev_type_capacity_degradation_polished` / `ev_type_v2b_ratio_polished` / `ev_type_heterogeneity_panel`（各含 `.png`、`.pdf`、`.svg`）。",
             "",
         ]
     )
@@ -405,6 +609,21 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=root / "results" / "figures" / "problem2" / "ev_type_v2b_ratio.png",
     )
+    p.add_argument(
+        "--fig-cap-deg-polished",
+        type=Path,
+        default=root / "results" / "figures" / "problem2" / "ev_type_capacity_degradation_polished.png",
+    )
+    p.add_argument(
+        "--fig-v2b-polished",
+        type=Path,
+        default=root / "results" / "figures" / "problem2" / "ev_type_v2b_ratio_polished.png",
+    )
+    p.add_argument(
+        "--fig-heterogeneity-panel",
+        type=Path,
+        default=root / "results" / "figures" / "problem2" / "ev_type_heterogeneity_panel.png",
+    )
     args = p.parse_args(argv)
 
     setup_matplotlib_zh()
@@ -426,10 +645,19 @@ def main(argv: list[str] | None = None) -> int:
     )
     plot_capacity_degradation(summ, args.fig_cap_deg)
     plot_v2b_ratio(summ, args.fig_v2b)
+    plot_capacity_degradation_polished(summ, args.fig_cap_deg_polished)
+    plot_v2b_ratio_horizontal_polished(summ, args.fig_v2b_polished)
+    plot_heterogeneity_panel_polished(summ, args.fig_heterogeneity_panel)
     print("Wrote:", args.out_csv.resolve())
     print("Wrote:", args.out_md.resolve())
     print("Wrote:", args.fig_cap_deg.resolve())
     print("Wrote:", args.fig_v2b.resolve())
+    stem1 = args.fig_cap_deg_polished.with_suffix("")
+    stem2 = args.fig_v2b_polished.with_suffix("")
+    stem3 = args.fig_heterogeneity_panel.with_suffix("")
+    print("Wrote (polished + PDF/SVG):", args.fig_cap_deg_polished.resolve(), stem1.with_suffix(".pdf"), stem1.with_suffix(".svg"))
+    print("Wrote (polished + PDF/SVG):", args.fig_v2b_polished.resolve(), stem2.with_suffix(".pdf"), stem2.with_suffix(".svg"))
+    print("Wrote (polished + PDF/SVG):", args.fig_heterogeneity_panel.resolve(), stem3.with_suffix(".pdf"), stem3.with_suffix(".svg"))
     return 0
 
 
