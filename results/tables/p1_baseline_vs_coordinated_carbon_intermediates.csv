@@ -1,0 +1,3 @@
+﻿scenario,scenario_label_zh,run_tag,grid_import_energy_kwh_from_table,grid_import_energy_kwh_from_timeseries,abs_diff_table_minus_ts_kwh,carbon_emission_kg,weighted_avg_grid_carbon_kg_per_kwh,carbon_profile_mean_grid_carbon_kg_per_kwh
+baseline_noncooperative,非协同基线,baseline_default,63760.2652,63760.2652173913,-1.739129947964102e-05,42048.72426956522,0.6594816399555373,0.6514285714285715
+p1_coordinated,协同调度,p1_ultimate_latest,65263.89581749999,65263.89581749999,0.0,42931.758762022495,0.6578178980009753,0.6514285714285715

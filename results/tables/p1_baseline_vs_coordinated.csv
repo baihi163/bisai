@@ -1,0 +1,3 @@
+﻿scenario,total_pv_energy_kwh,pv_used_energy_kwh,pv_curtail_energy_kwh,renewable_consumption_ratio,operation_cost,grid_import_energy_kwh,carbon_emission_kg,import_weighted_carbon_intensity_kg_per_kwh,scenario_label_zh,run_tag,grid_purchase_cost_yuan,sell_revenue_yuan,net_cost_yuan
+baseline_noncooperative,22969.3,22969.3,0.0,1.0,46304.527348,63760.2652,42048.72426956522,0.659481640135418,非协同基线,baseline_default,46304.527348,0.0,46304.527348
+p1_coordinated,22969.3,22969.3,0.0,1.0,38973.219277,65263.89581749999,42931.758762022495,0.6578178980009753,协同调度,p1_ultimate_latest,38634.519277,0.0,38973.219277
