@@ -223,9 +223,7 @@ $$
 对每个时段 $$t$$，园区系统满足功率平衡关系：
 
 $$
-P_t^{pv,use} + P_t^{buy} + P_t^{ess,dis} + \sum_i P_{i,t}^{ev,dis}
-=
-P_t^{load} + P_t^{sell} + P_t^{ess,ch} + \sum_i P_{i,t}^{ev,ch}
+P_t^{pv,use} + P_t^{buy} + P_t^{ess,dis} + \sum_i P_{i,t}^{ev,dis} = P_t^{load} + P_t^{sell} + P_t^{ess,ch} + \sum_i P_{i,t}^{ev,ch}
 $$
 
 其中，实际负荷 $$P_t^{load}$$ 为建筑原始负荷经平移、恢复与削减后的结果。
