@@ -18,7 +18,7 @@ import pulp
 PENALTY_CURTAIL = 0.5
 PENALTY_SHIFT = 0.02
 
-# (CSV/Markdown 行名, dict 键)
+# (CSV 中 cost_item 英文键名, dict 内键) — CSV 保持英文以便程序读取
 COST_ITEM_ROWS: list[tuple[str, str]] = [
     ("Grid import cost", "grid_import_cost"),
     ("Grid export revenue", "grid_export_revenue"),
@@ -33,6 +33,33 @@ COST_ITEM_ROWS: list[tuple[str, str]] = [
     ("Objective recomputed from solution", "objective_recomputed_from_solution"),
     ("Objective shown in CBC log style", "objective_cbc_log_style"),
 ]
+
+# 论文展示用中文名称（与 CSV 中英文 cost_item 一一对应）
+COST_ITEM_LABEL_ZH: dict[str, str] = {
+    "Grid import cost": "电网购电成本",
+    "Grid export revenue": "电网售电收益",
+    "PV curtailment penalty": "光伏弃电惩罚成本",
+    "Load shed penalty": "未供电惩罚成本",
+    "Building shift penalty": "建筑柔性调节补偿成本",
+    "ESS degradation cost": "储能退化成本",
+    "EV degradation cost": "电动汽车电池退化成本",
+    "Carbon cost": "碳排放成本",
+    "Objective affine constant": "目标函数常数项",
+    "Objective from solver": "最优目标函数值",
+    "Objective recomputed from solution": "解后重算目标值",
+    "Objective shown in CBC log style": "按 CBC 日志口径的目标值",
+}
+
+
+def cost_item_label_zh(english_label: str) -> str:
+    return COST_ITEM_LABEL_ZH.get(english_label, english_label)
+
+
+def _ratio_display(baseline_val: float, coord_val: float, *, decimals: int) -> str:
+    """相对改善率展示：基线为 0 时无意义。"""
+    if abs(baseline_val) < 1e-12:
+        return "—"
+    return f"{(baseline_val - coord_val) / baseline_val:.{decimals}f}"
 
 
 def var_float(x: pulp.LpVariable) -> float:
@@ -133,11 +160,68 @@ def costs_dict_to_reconciliation_df(costs: Mapping[str, float], *, decimals: int
     return pd.DataFrame(rows)
 
 
-def write_reconciliation_csv(path: Path, costs: Mapping[str, float], *, decimals: int = 6) -> Path:
+def write_reconciliation_zh_markdown(
+    md_path: Path,
+    costs: Mapping[str, float],
+    *,
+    title: str,
+    subtitle: str,
+    decimals: int = 6,
+) -> Path:
+    """全周对账表中文 Markdown（与同名 CSV 配套，不改变 CSV 英文键名）。"""
+    md_path = md_path.resolve()
+    md_path.parent.mkdir(parents=True, exist_ok=True)
+    lines = [
+        f"# {title}",
+        "",
+        subtitle,
+        "",
+        "下表金额单位均为 **元**；分项定义与协同调度主模型目标函数及解后重算口径一致。",
+        "",
+        "| 成本项 | 金额（元） |",
+        "| --- | ---: |",
+    ]
+    for en_label, key in COST_ITEM_ROWS:
+        zh = cost_item_label_zh(en_label)
+        val = round(float(costs[key]), decimals)
+        lines.append(f"| {zh} | {val} |")
+    lines.append("")
+    lines.extend(
+        [
+            "## 说明",
+            "",
+            "协同调度模型由 PuLP/CBC 求解时，**最优目标函数值**含目标仿射表达式中的常数项（上表「目标函数常数项」）。"
+            "CBC 控制台打印的 Objective value 可能不包含该常数项，故与「按 CBC 日志口径的目标值」存在固定差额；"
+            "论文中报告完整目标时，应以 **最优目标函数值** 为准。",
+            "",
+        ]
+    )
+    md_path.write_text("\n".join(lines), encoding="utf-8")
+    return md_path
+
+
+def write_reconciliation_csv(
+    path: Path,
+    costs: Mapping[str, float],
+    *,
+    decimals: int = 6,
+    zh_title: str | None = None,
+    zh_subtitle: str | None = None,
+) -> tuple[Path, Path | None]:
     path = path.resolve()
     path.parent.mkdir(parents=True, exist_ok=True)
     costs_dict_to_reconciliation_df(costs, decimals=decimals).to_csv(path, index=False, encoding="utf-8-sig")
-    return path
+    md_path: Path | None = None
+    if zh_title is not None:
+        md_path = path.with_suffix(".md").resolve()
+        write_reconciliation_zh_markdown(
+            md_path,
+            costs,
+            title=zh_title,
+            subtitle=zh_subtitle or "本表对应全周（672 个 15 min 时段）优化或仿真结果。",
+            decimals=decimals,
+        )
+    return path, md_path
 
 
 def write_cost_comparison_csv_md(
@@ -148,16 +232,13 @@ def write_cost_comparison_csv_md(
     md_path: Path,
     decimals: int = 6,
 ) -> tuple[Path, Path]:
-    """生成协同 vs baseline 对比表（delta = baseline − coordinated）。"""
+    """生成协同 vs baseline 对比表（delta = baseline − coordinated）；CSV 列名保持英文。"""
     rows = []
     for label, key in COST_ITEM_ROWS:
         c = float(coordinated[key])
         b = float(baseline[key])
         delta = b - c
-        if abs(b) < 1e-12:
-            ratio_str = "NA"
-        else:
-            ratio_str = f"{(b - c) / b:.{decimals}f}"
+        ratio_str = _ratio_display(b, c, decimals=decimals)
         rows.append(
             {
                 "cost_item": label,
@@ -175,52 +256,51 @@ def write_cost_comparison_csv_md(
     df.to_csv(csv_path, index=False, encoding="utf-8-sig")
 
     lines = [
-        "# 协同模型 vs baseline：全周成本分项对比（正式版）",
+        "# 全周成本分项对比（协同调度 vs 基线）",
         "",
-        "本表基于 **672 个 15 min 时段** 的完整优化 horizon 与 baseline 仿真结果汇总，"
-        "非 `max-periods` 截断的演示算例。若某侧 CSV 由短 horizon 生成，请勿与本文标题混用。",
+        "本表基于全周（672 个 15 min 时段）协同优化最优解与基线规则仿真结果，对目标函数各经济分项进行同一口径汇总与对比。"
+        "金额单位均为 **元**。",
         "",
-        "## 论文中目标函数取值",
+        "## 目标函数在论文中的写法",
         "",
-        "- **协同模型**：论文中的「最优目标函数值」应采用 **Objective from solver**（即 `pulp.value(prob.objective)`，"
-        "含 PuLP 目标仿射表达式中的 **Objective affine constant** 项）。",
-        "- **CBC 控制台**：`Objective value` 可能 **不含** 仿射常数项，仅用于与 **Objective shown in CBC log style** 对照调试。",
-        "- **baseline**：无 MILP；表中 **Objective from solver** 与 **Objective recomputed from solution** 均取"
-        "与协同模型 **同一分项口径** 加总得到的等价总成本（affine constant 恒为 0）。"
-        "该项可与 baseline KPI 中仅含「购电−售电」的 `total_cost_cny` 不同，后者不含退化/弃光惩罚/未供电惩罚等。",
+        "- **协同调度模型**：正文中的「最优目标函数值」应取 **最优目标函数值**（即 PuLP 求得的完整仿射目标，含 **目标函数常数项**）。",
+        "- **求解器日志**：CBC 控制台显示的数值可能不含上述常数项，故与完整最优值存在固定差额；可与 **按 CBC 日志口径的目标值** 对照，用于核对模型实现。",
+        "- **基线模型**：无混合整数规划求解过程；表中 **最优目标函数值** 与 **解后重算目标值** 均按与协同模型一致的分项加总得到，常数项恒为零。"
+        "需注意：基线原有 KPI 中的「总费用」若仅含购售电收支，则与本表「等价总成本」可能不一致，因本表另计退化、弃电惩罚、未供电惩罚等项。",
         "",
-        "## 符号约定",
+        "## 符号与列含义",
         "",
-        "- **Grid export revenue** 列为正值表示售电收入；重算总目标时按 **减项** 处理（与 MILP 中 `-sell·P·Δt` 一致）。",
-        "- **delta_baseline_minus_coordinated_yuan** = baseline − coordinated（正值表示 baseline 更高、协同更优）。",
-        "- **improvement_ratio** = (baseline − coordinated) / baseline；baseline 分项为 0 时记 **NA**（避免除零）。",
-        "- **Load shed penalty（baseline）**：非协同仿真仅有聚合 `unmet_load_kw`，无分建筑削减；"
-        "为与协同分项对齐，按 `flexible_load_params_clean.csv` 中 **penalty_cny_per_kwh_not_served 的最大值** 乘以未供电量折算，"
-        "不改变 baseline 既有 `total_cost_cny`（仅购售电）定义。",
+        "- **电网售电收益**列以正值表示售电收入；重算总目标时按 **减项** 计入（与模型中「负收益」一致）。",
+        "- **差值（基线−协同）/元**：正值表示基线成本更高，即协同调度更优。",
+        "- **相对改善率**：以基线分项为分母，计算（基线−协同）/基线；若基线该项为零，则相对率 **无意义**，表中记为「—」。",
+        "- **未供电惩罚成本（基线）**：基线仅有聚合未供电功率，为与协同分项对齐，按柔性负荷参数表中 **未供电惩罚单价的最大值** 折算，不改变基线原有仅含购售电的核算口径。",
         "",
-        "## 分项对比表",
+        "## 分项对比",
         "",
-        "| cost_item | coordinated_model_yuan | baseline_yuan | delta_baseline_minus_coordinated_yuan | improvement_ratio |",
+        "| 成本项 | 协同调度模型/元 | 基线模型/元 | 差值（基线−协同）/元 | 相对改善率 |",
         "| --- | ---: | ---: | ---: | --- |",
     ]
     for _, r in df.iterrows():
+        zh = cost_item_label_zh(str(r["cost_item"]))
+        ratio_md = str(r["improvement_ratio"])
+        if ratio_md.upper() == "NA":
+            ratio_md = "—"
         lines.append(
-            f"| {r['cost_item']} | {r['coordinated_model_yuan']} | {r['baseline_yuan']} | "
-            f"{r['delta_baseline_minus_coordinated_yuan']} | {r['improvement_ratio']} |"
+            f"| {zh} | {r['coordinated_model_yuan']} | {r['baseline_yuan']} | "
+            f"{r['delta_baseline_minus_coordinated_yuan']} | {ratio_md} |"
         )
     coord_total = float(coordinated["objective_from_solver"])
     base_total = float(baseline["objective_from_solver"])
     delta_t = base_total - coord_total
-    ratio_t = "NA" if abs(base_total) < 1e-12 else f"{(delta_t / base_total):.{decimals}f}"
+    ratio_t = _ratio_display(base_total, coord_total, decimals=decimals)
     lines.extend(
         [
             "",
-            "## 简要结论（模板，可按结果改写）",
+            "## 小结（可按需改写后纳入正文）",
             "",
-            f"- 全周等价总成本（分项重算口径）：协同 **{coord_total:.{decimals}f} 元**，baseline **{base_total:.{decimals}f} 元**，"
-            f"差值 baseline−协同 **{delta_t:.{decimals}f} 元**，相对改善率 **{ratio_t}**（以 baseline 为分母）。",
-            "- 主要贡献项：请对照表中 `delta_baseline_minus_coordinated_yuan` 绝对值较大的行"
-            "（如购电成本、弃光惩罚、未供电惩罚、退化成本等）撰写机理分析。",
+            f"- 全周等价总成本：协同调度为 **{coord_total:.{decimals}f} 元**，基线为 **{base_total:.{decimals}f} 元**，"
+            f"二者相差 **{delta_t:.{decimals}f} 元**（基线减协同）；相对改善率为 **{ratio_t}**（以基线总成本为分母）。",
+            "- 机理分析建议：重点考察表中差值绝对值较大的分项（如购电成本、弃电惩罚、未供电惩罚、各类退化成本等），并与功率时序图、事件窗口图相互印证。",
             "",
         ]
     )
@@ -249,10 +329,10 @@ def try_write_fullweek_comparison(repo_root: Path) -> tuple[Path, Path] | None:
 
 
 def appendix_rows_zh(costs: Mapping[str, float], *, decimals: int = 4) -> pd.DataFrame:
-    """附录用两列表（项 / 数值（元）），与历史脚本列名兼容。"""
+    """附录 CSV：列名为中文「成本项」「金额（元）」，行内成本项为中文（英文键仍保留于程序逻辑）。"""
     rows = []
-    for label, key in COST_ITEM_ROWS:
-        rows.append({"项": label, "数值（元）": f"{float(costs[key]):.{decimals}f}"})
+    for en_label, key in COST_ITEM_ROWS:
+        rows.append({"成本项": cost_item_label_zh(en_label), "金额（元）": f"{float(costs[key]):.{decimals}f}"})
     return pd.DataFrame(rows)
 
 
@@ -268,16 +348,16 @@ def write_appendix_reconciliation_files(
     md_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(csv_path, index=False, encoding="utf-8-sig")
     lines = [
-        "# 目标函数分项对账表（附录 / 补充材料）",
+        "# 目标函数分项对账表（附录）",
         "",
-        "分项口径见 `objective_reconciliation.py` 与 `p_1_5_ultimate` 目标函数定义。",
+        "分项定义与协同调度模型目标函数及解后重算口径一致；金额单位为元。",
         "",
-        "| 项 | 数值（元） |",
+        "| 成本项 | 金额（元） |",
         "| --- | ---: |",
     ]
     for _, r in df.iterrows():
-        item = str(r["项"]).replace("|", "\\|")
-        val = str(r["数值（元）"])
+        item = str(r["成本项"]).replace("|", "\\|")
+        val = str(r["金额（元）"])
         lines.append(f"| {item} | {val} |")
     lines.append("")
     md_path.write_text("\n".join(lines), encoding="utf-8")

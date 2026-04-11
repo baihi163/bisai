@@ -168,6 +168,98 @@ def summarize_events_for_timeseries(
     return pd.DataFrame(summaries)
 
 
+_EVENT_SUMMARY_COL_ZH: dict[str, str] = {
+    "event_id": "事件编号",
+    "window_start": "窗口起始时间",
+    "window_end": "窗口结束时间",
+    "scenario_note": "场景说明",
+    "n_periods_in_window": "窗内时段数",
+    "total_grid_import_kwh": "总购电量（kWh）",
+    "peak_grid_import_kw": "峰值购电功率（kW）",
+    "total_grid_export_kwh": "总售电量（kWh）",
+    "total_ess_discharge_kwh": "总储能放电量（kWh）",
+    "total_ev_discharge_kwh": "总电动汽车放电量（kWh）",
+    "total_building_flex_energy_kwh": "总建筑柔性调用量（kWh）",
+    "total_load_shed_kwh": "总未供电量（kWh）",
+    "total_pv_curtail_kwh": "总弃光电量（kWh）",
+    "warning": "备注",
+}
+
+
+def _event_id_zh(eid: str) -> str:
+    m = {
+        "stress_event_1": "压力事件一",
+        "stress_event_2": "压力事件二",
+        "stress_event_3": "压力事件三",
+    }
+    return m.get(str(eid).strip(), str(eid))
+
+
+def write_event_response_summary_markdown(summary: pd.DataFrame, path: Path) -> Path:
+    """
+    与 event_response_summary.csv 配套的中文展示表（CSV 列名仍为英文，供程序读取）。
+    """
+    path = path.resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines: list[str] = [
+        "# 特殊事件窗口运行指标汇总表",
+        "",
+        "下表由协同调度模型最优解时序在后处理阶段按场景标注的压力时段截取统计得到；"
+        "能量类指标为窗口内功率对时间的积分，时间步长取自时序表。原始数据文件 `event_response_summary.csv` 中字段名保持英文，以便脚本读取。",
+        "",
+    ]
+    if summary.empty:
+        lines.append("_（无汇总行）_")
+        path.write_text("\n".join(lines), encoding="utf-8")
+        return path
+
+    disp = summary.copy()
+    if "event_id" in disp.columns:
+        disp["event_id"] = disp["event_id"].astype(str).map(_event_id_zh)
+    for col in ("window_start", "window_end"):
+        if col in disp.columns:
+            disp[col] = pd.to_datetime(disp[col], errors="coerce").dt.strftime("%Y-%m-%d %H:%M")
+
+    num_fmt_cols = {
+        "total_grid_import_kwh",
+        "peak_grid_import_kw",
+        "total_grid_export_kwh",
+        "total_ess_discharge_kwh",
+        "total_ev_discharge_kwh",
+        "total_building_flex_energy_kwh",
+        "total_load_shed_kwh",
+        "total_pv_curtail_kwh",
+    }
+
+    def _fmt_num(x: object) -> str:
+        if pd.isna(x):
+            return "—"
+        v = float(x)
+        s = f"{v:.4f}".rstrip("0").rstrip(".")
+        return s if s else "0"
+
+    for c in num_fmt_cols:
+        if c in disp.columns:
+            disp[c] = disp[c].map(_fmt_num)
+
+    zh_cols = [_EVENT_SUMMARY_COL_ZH.get(c, c) for c in disp.columns]
+    lines.append("| " + " | ".join(zh_cols) + " |")
+    lines.append("| " + " | ".join(["---"] * len(zh_cols)) + " |")
+    for _, row in disp.iterrows():
+        cells = []
+        for c in disp.columns:
+            v = row[c]
+            if pd.isna(v):
+                cells.append("—")
+            else:
+                s = str(v).strip()
+                cells.append(s.replace("|", "\\|") if s else "—")
+        lines.append("| " + " | ".join(cells) + " |")
+    lines.append("")
+    path.write_text("\n".join(lines), encoding="utf-8")
+    return path
+
+
 def write_methodology_markdown(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -192,19 +284,22 @@ def write_methodology_markdown(path: Path) -> None:
 
 本模块 `event_response_analysis.py` 仅在**最优解导出之后**，按 `scenario_notes` 解析出的时间窗对轨迹做**后验统计**（购电量、峰值购电功率、售电与各类支撑功率对应的能量等），**不改变**原 MILP 的解。
 
-## 4. 汇总指标口径（`event_response_summary.csv`）
+## 4. 汇总指标口径（事件响应汇总表）
 
-- **总购电量 / 总售电量**：窗口内 `P_buy`、`P_sell` 对时间的积分（kWh），时间步长取自 `delta_t_h` 或相邻时间戳。
-- **峰值购电功率**：窗口内 `P_buy` 的最大值（kW）。
-- **总储能放电量 / 总 EV 放电量**：窗口内 `P_ess_dis`、各车放电功率合计对时间的积分（kWh）。
-- **总建筑柔性调用量**：各建筑区块 **平移功率 + 恢复功率** 求和后对时间的积分（kWh），表征柔性资源的“动作强度”，不等价于净移位的单一方向能量。
-- **总负荷削减量**：各区块削减功率对时间的积分（kWh）。
-- **总弃光量**：`pv_upper - P_pv_use` 对时间的积分（kWh），即未利用的可发光伏。
+数据文件 `event_response_summary.csv` 保留英文列名；中文释义如下（与 `event_response_summary.md` 表头一致）：
+
+- **总购电量 / 总售电量（kWh）**：窗口内购电、售电功率对时间的积分；步长取自时序表或相邻时间戳推断。
+- **峰值购电功率（kW）**：窗口内购电功率的最大值。
+- **总储能放电量 / 总电动汽车放电量（kWh）**：储能放电功率、各车放电功率合计对时间的积分。
+- **总建筑柔性调用量（kWh）**：各建筑区块平移与恢复功率求和后对时间的积分，表征柔性资源调用强度，不等价于单一方向的净移位能量。
+- **总未供电量（kWh）**：各区块削减（未供电）功率对时间的积分。
+- **总弃光电量（kWh）**：弃光功率对时间的积分，对应未利用的可发光伏部分。
+- **备注**：若窗口与时序不重叠，给出说明性文字而非数值。
 
 ## 5. 输出文件
 
-- `event_response_summary.csv`：各 `stress_event_*` 窗口的汇总指标；
-- 主程序在求得最优解时可同步写出 `p_1_5_timeseries.csv`（或与 `--timeseries` 指向的表结构一致），供本分析读取。
+- **事件响应汇总表**：`event_response_summary.csv`（机器可读）及同目录下 `event_response_summary.md`（中文表头，便于论文附录引用）。
+- **协同调度最优解时序**：由主求解流程写出，供本模块读取并截取事件窗口。
 
 ## 6. 与论文章节的对应关系
 
@@ -223,10 +318,10 @@ def run_event_response_pipeline(
     summary_csv: Path | None = None,
     methodology_md: Path | None = None,
     delta_t_hours: float | None = None,
-) -> tuple[Path, Path]:
+) -> tuple[Path, Path, Path]:
     """
-    解析场景事件、汇总指标、写 event_response_summary.csv 与方法说明 Markdown。
-    返回 (summary_csv, methodology_md) 绝对路径。
+    解析场景事件、汇总指标、写 event_response_summary.csv、中文汇总 Markdown 与方法说明。
+    返回 (summary_csv, methodology_md, summary_md) 绝对路径。
     """
     repo_root = repo_root.resolve()
     scen = Path(scenario_csv) if scenario_csv is not None else _pick_scenario_notes(repo_root)
@@ -253,8 +348,10 @@ def run_event_response_pipeline(
     )
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     summary.to_csv(out_csv, index=False, encoding="utf-8-sig")
+    summary_md_path = out_csv.with_suffix(".md").resolve()
+    write_event_response_summary_markdown(summary, summary_md_path)
     write_methodology_markdown(out_md)
-    return out_csv.resolve(), out_md.resolve()
+    return out_csv.resolve(), out_md.resolve(), summary_md_path
 
 
 def main() -> int:
@@ -269,7 +366,7 @@ def main() -> int:
     here = Path(__file__).resolve().parent
     repo = args.repo_root.resolve() if args.repo_root else here.parents[2]
     try:
-        csv_p, md_p = run_event_response_pipeline(
+        csv_p, md_p, sum_md_p = run_event_response_pipeline(
             repo_root=repo,
             timeseries_csv=args.timeseries,
             scenario_csv=args.scenario,
@@ -281,6 +378,7 @@ def main() -> int:
         print(f"错误: {exc}", flush=True)
         return 2
     print(f"已写入: {csv_p}", flush=True)
+    print(f"已写入: {sum_md_p}", flush=True)
     print(f"已写入: {md_p}", flush=True)
     return 0
 

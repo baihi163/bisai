@@ -676,8 +676,16 @@ def main() -> int:
             tables_dir = (_REPO_ROOT / "results" / "tables").resolve()
             if n_horizon == 672:
                 fw = tables_dir / "objective_reconciliation_fullweek.csv"
-                obr.write_reconciliation_csv(fw, bd, decimals=6)
-                print(f"全周正式对账: {fw}", file=sys.stderr)
+                _csv_p, md_p = obr.write_reconciliation_csv(
+                    fw,
+                    bd,
+                    decimals=6,
+                    zh_title="目标函数分项对账表（全周，协同调度模型）",
+                    zh_subtitle="本表对应全周 672 个时段（步长 15 min）协同优化最优解的经济分项汇总。",
+                )
+                print(f"全周正式对账: {_csv_p}", file=sys.stderr)
+                if md_p:
+                    print(f"全周对账（中文 Markdown）: {md_p}", file=sys.stderr)
                 cmp_out = obr.try_write_fullweek_comparison(_REPO_ROOT)
                 if cmp_out:
                     print(f"全周对比表: {cmp_out[0]}", file=sys.stderr)
@@ -731,7 +739,7 @@ def main() -> int:
                 else (_REPO_ROOT / "docs" / "problem1_special_event_implicit_modeling.md").resolve()
             )
             try:
-                out_csv, out_md = era.run_event_response_pipeline(
+                out_csv, out_md, sum_md = era.run_event_response_pipeline(
                     repo_root=_REPO_ROOT,
                     timeseries_df=ts_df,
                     summary_csv=summary_csv,
@@ -739,6 +747,7 @@ def main() -> int:
                     delta_t_hours=float(data["delta_t"]),
                 )
                 print(f"特殊事件响应汇总: {out_csv}", file=sys.stderr)
+                print(f"特殊事件响应汇总（中文 Markdown）: {sum_md}", file=sys.stderr)
                 print(f"方法说明: {out_md}", file=sys.stderr)
             except (FileNotFoundError, KeyError, ValueError, OSError) as exc:
                 print(f"事件响应分析失败（时序已保存）: {exc}", file=sys.stderr)

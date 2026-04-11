@@ -623,6 +623,41 @@ def summarize_kpis(
     }
 
 
+def build_baseline_timeseries_aligned(ts_df: pd.DataFrame, data: dict[str, Any]) -> pd.DataFrame:
+    """
+    与协同模型 `p_1_5_timeseries.csv` 对齐的列名/口径，供论文对比作图脚本读取。
+    pv_use_kw = 本地消纳 + 储能充电 + 上网（交流侧光伏利用分量之和）。
+    """
+    grid_df = data["grid"]
+    n = len(ts_df)
+    lim = grid_df["grid_import_limit_kw"].to_numpy(dtype=np.float64)[:n]
+    dt = float(data["dt_hours"])
+    pv_use = (
+        ts_df["pv_used_locally_kw"].to_numpy(dtype=np.float64)
+        + ts_df["pv_to_ess_kw"].to_numpy(dtype=np.float64)
+        + ts_df["pv_export_kw"].to_numpy(dtype=np.float64)
+    )
+    return pd.DataFrame(
+        {
+            "timestamp": ts_df["timestamp"],
+            "delta_t_h": dt,
+            "grid_import_kw": ts_df["grid_import_kw"],
+            "grid_export_kw": ts_df["grid_export_kw"],
+            "ess_charge_kw": ts_df["ess_charge_kw"],
+            "ess_discharge_kw": ts_df["ess_discharge_kw"],
+            "ev_charge_kw": ts_df["ev_total_charge_kw"],
+            "ev_discharge_kw": ts_df["ev_total_discharge_kw"],
+            "building_flex_kw": np.zeros(n, dtype=np.float64),
+            "pv_use_kw": pv_use,
+            "pv_upper_kw": ts_df["pv_available_kw"],
+            "pv_curtail_kw": ts_df["pv_curtailed_kw"],
+            "load_shed_kw": ts_df["unmet_load_kw"],
+            "price_buy_yuan_per_kwh": ts_df["buy_price"],
+            "grid_import_limit_kw": lim,
+        }
+    )
+
+
 def write_readme(path: Path) -> None:
     text = f"""# 问题1 非协同调度基准（baseline）
 
@@ -710,6 +745,9 @@ def main() -> None:
     ts_df, ev_df, kpis, recon = run_baseline(data)
 
     ts_df.to_csv(OUT_DIR / "baseline_timeseries_results.csv", index=False, encoding="utf-8-sig")
+    aligned_ts = build_baseline_timeseries_aligned(ts_df, data)
+    aligned_ts.to_csv(OUT_DIR / "baseline_timeseries_aligned.csv", index=False, encoding="utf-8-sig")
+    print(f"已写出论文对比用 baseline 时序: {OUT_DIR / 'baseline_timeseries_aligned.csv'}", flush=True)
     ev_df.to_csv(OUT_DIR / "baseline_ev_session_summary.csv", index=False, encoding="utf-8-sig")
     (OUT_DIR / "baseline_kpi_summary.json").write_text(
         json.dumps(kpis, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -719,8 +757,16 @@ def main() -> None:
     obr = _load_objective_reconciliation()
     fullweek_path = ROOT / "results" / "tables" / "objective_reconciliation_baseline_fullweek.csv"
     if len(ts_df) == 672:
-        obr.write_reconciliation_csv(fullweek_path, recon, decimals=6)
-        print(f"已写入 baseline 全周对账: {fullweek_path}", flush=True)
+        _csv_p, md_p = obr.write_reconciliation_csv(
+            fullweek_path,
+            recon,
+            decimals=6,
+            zh_title="目标函数分项对账表（全周，基线模型）",
+            zh_subtitle="本表对应全周 672 个时段（步长 15 min）基线规则仿真的经济分项汇总（与协同模型同一分项口径）。",
+        )
+        print(f"已写入 baseline 全周对账: {_csv_p}", flush=True)
+        if md_p:
+            print(f"已写入 baseline 全周对账（中文 Markdown）: {md_p}", flush=True)
         merged = obr.try_write_fullweek_comparison(ROOT)
         if merged:
             print(f"已写入全周对比: {merged[0]}", flush=True)
