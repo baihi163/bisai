@@ -189,7 +189,7 @@ def draw(save_base: Path | None = None) -> tuple[Path, Path]:
             "anchor_inner": center_anchor(90),
         },
         {
-            "title": "电动汽车（EV）",
+            "title": "电动汽车",
             "body": "到站即充，仅充电不放电\n仅在停留时段可调\n离站须满足目标电量",
             "pos": (9.35, 4.05),
             "w": 2.58,
@@ -198,7 +198,7 @@ def draw(save_base: Path | None = None) -> tuple[Path, Path]:
             "anchor_inner": center_anchor(28),
         },
         {
-            "title": "光伏（PV）",
+            "title": "光伏发电",
             "body": "受可用出力上限约束\n优先本地消纳\n先供建筑与 EV\n剩余：储能 / 上网 / 弃光",
             "pos": (9.05, 1.35),
             "w": 2.72,

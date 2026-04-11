@@ -24,6 +24,8 @@ import numpy as np
 import pandas as pd
 import pulp
 
+import objective_reconciliation as obr
+
 _HERE = Path(__file__).resolve().parent
 _REPO_ROOT = _HERE.parents[2]
 
@@ -511,11 +513,6 @@ def build_and_solve(
     return prob, obj_val, solve_ctx
 
 
-def _var_float(x: pulp.LpVariable) -> float:
-    v = x.varValue
-    return float(v) if v is not None else 0.0
-
-
 def extract_solution_timeseries(data: dict[str, Any], ctx: dict[str, Any]) -> pd.DataFrame:
     """将最优解导出为与事件分析模块对齐的 15min 时序表（不改变优化模型，仅后处理）。"""
     n = data["n"]
@@ -525,24 +522,24 @@ def extract_solution_timeseries(data: dict[str, Any], ctx: dict[str, Any]) -> pd
 
     rows: list[dict[str, Any]] = []
     for t in range(n):
-        p_ev_dis = sum(_var_float(ctx["P_ev_dis"][k]) for k in ev_keys_by_t.get(t, []))
-        p_ev_ch = sum(_var_float(ctx["P_ev_ch"][k]) for k in ev_keys_by_t.get(t, []))
+        p_ev_dis = sum(obr.var_float(ctx["P_ev_dis"][k]) for k in ev_keys_by_t.get(t, []))
+        p_ev_ch = sum(obr.var_float(ctx["P_ev_ch"][k]) for k in ev_keys_by_t.get(t, []))
         p_shift = p_rec = p_shed = 0.0
         for b in buildings:
             name = b["name"]
             key = (name, t)
-            p_shift += _var_float(ctx["P_shift_out"][key])
-            p_rec += _var_float(ctx["P_recover"][key])
-            p_shed += _var_float(ctx["P_shed"][key])
-        p_pv = _var_float(ctx["P_pv_use"][t])
+            p_shift += obr.var_float(ctx["P_shift_out"][key])
+            p_rec += obr.var_float(ctx["P_recover"][key])
+            p_shed += obr.var_float(ctx["P_shed"][key])
+        p_pv = obr.var_float(ctx["P_pv_use"][t])
         pv_up = float(data["pv_upper"][t])
         rows.append(
             {
                 "timestamp": data["timestamps"][t],
-                "P_buy_kw": _var_float(ctx["P_buy"][t]),
-                "P_sell_kw": _var_float(ctx["P_sell"][t]),
-                "P_ess_dis_kw": _var_float(ctx["P_ess_dis"][t]),
-                "P_ess_ch_kw": _var_float(ctx["P_ess_ch"][t]),
+                "P_buy_kw": obr.var_float(ctx["P_buy"][t]),
+                "P_sell_kw": obr.var_float(ctx["P_sell"][t]),
+                "P_ess_dis_kw": obr.var_float(ctx["P_ess_dis"][t]),
+                "P_ess_ch_kw": obr.var_float(ctx["P_ess_ch"][t]),
                 "P_ev_dis_total_kw": p_ev_dis,
                 "P_ev_ch_total_kw": p_ev_ch,
                 "P_shift_out_total_kw": p_shift,
@@ -556,148 +553,6 @@ def extract_solution_timeseries(data: dict[str, Any], ctx: dict[str, Any]) -> pd
             }
         )
     return pd.DataFrame(rows)
-
-
-def summarize_solution_costs(prob: pulp.LpProblem, data: dict[str, Any], ctx: dict[str, Any]) -> dict[str, float]:
-    """按与 build_and_solve 相同口径从最优解重算分项成本，并对 objective 常数项与 CBC 日志对账。"""
-    n = data["n"]
-    T = range(n)
-    dt = data["delta_t"]
-    carbon_price = float(ctx["carbon_price"])
-    pc = float(ctx["PENALTY_CURTAIL"])
-    ps = float(ctx["PENALTY_SHIFT"])
-    ess = ctx["ess"]
-    buildings: list[dict[str, Any]] = ctx["buildings"]
-    ev_sessions: list[dict[str, Any]] = ctx["ev_sessions"]
-    ev_ts_by_i: dict[int, list[int]] = ctx["ev_ts_by_i"]
-
-    P_buy = ctx["P_buy"]
-    P_sell = ctx["P_sell"]
-    P_pv_use = ctx["P_pv_use"]
-    P_ess_ch = ctx["P_ess_ch"]
-    P_ess_dis = ctx["P_ess_dis"]
-    P_shift_out = ctx["P_shift_out"]
-    P_recover = ctx["P_recover"]
-    P_shed = ctx["P_shed"]
-    P_ev_ch = ctx["P_ev_ch"]
-    P_ev_dis = ctx["P_ev_dis"]
-
-    grid_import_cost = 0.0
-    grid_export_revenue = 0.0
-    carbon_cost = 0.0
-    pv_curtail_penalty = 0.0
-    ess_degradation_cost = 0.0
-    for t in T:
-        pb, psell, ppu = _var_float(P_buy[t]), _var_float(P_sell[t]), _var_float(P_pv_use[t])
-        grid_import_cost += float(data["buy_price"][t]) * pb * dt
-        grid_export_revenue += float(data["sell_price"][t]) * psell * dt
-        carbon_cost += carbon_price * float(data["grid_carbon"][t]) * pb * dt
-        pv_curtail_penalty += pc * (float(data["pv_upper"][t]) - ppu) * dt
-        ess_degradation_cost += float(ess["degradation_cost_cny_per_kwh"]) * (
-            _var_float(P_ess_ch[t]) + _var_float(P_ess_dis[t])
-        ) * dt / 2
-
-    building_shift_penalty = 0.0
-    load_shed_penalty = 0.0
-    for b in buildings:
-        name = b["name"]
-        for t in T:
-            key = (name, t)
-            building_shift_penalty += ps * (_var_float(P_shift_out[key]) + _var_float(P_recover[key])) * dt
-            load_shed_penalty += float(b["penalty_not_served"]) * _var_float(P_shed[key]) * dt
-
-    ev_degradation_cost = 0.0
-    for i, ev in enumerate(ev_sessions):
-        for t in ev_ts_by_i.get(i, []):
-            k = (i, t)
-            if k in P_ev_ch:
-                ev_degradation_cost += float(ev["deg_cost"]) * (
-                    _var_float(P_ev_ch[k]) + _var_float(P_ev_dis[k])
-                ) * dt / 2
-
-    objective_recomputed_from_solution = (
-        grid_import_cost
-        - grid_export_revenue
-        + carbon_cost
-        + pv_curtail_penalty
-        + ess_degradation_cost
-        + building_shift_penalty
-        + load_shed_penalty
-        + ev_degradation_cost
-    )
-
-    objective_from_solver = float(pulp.value(prob.objective))
-    affine_const = float(getattr(prob.objective, "constant", 0.0) or 0.0)
-    objective_cbc_log_style = objective_from_solver - affine_const
-
-    return {
-        "grid_import_cost": grid_import_cost,
-        "grid_export_revenue": grid_export_revenue,
-        "pv_curtail_penalty": pv_curtail_penalty,
-        "load_shed_penalty": load_shed_penalty,
-        "building_shift_penalty": building_shift_penalty,
-        "ess_degradation_cost": ess_degradation_cost,
-        "ev_degradation_cost": ev_degradation_cost,
-        "carbon_cost": carbon_cost,
-        "objective_from_solver": objective_from_solver,
-        "objective_affine_constant": affine_const,
-        "objective_cbc_log_style": objective_cbc_log_style,
-        "objective_recomputed_from_solution": objective_recomputed_from_solution,
-    }
-
-
-_APPENDIX_RECONCILIATION_SPEC: list[tuple[str, str]] = [
-    ("Grid import cost", "grid_import_cost"),
-    ("Grid export revenue", "grid_export_revenue"),
-    ("PV curtailment penalty", "pv_curtail_penalty"),
-    ("Load shed penalty", "load_shed_penalty"),
-    ("Building shift penalty", "building_shift_penalty"),
-    ("ESS degradation cost", "ess_degradation_cost"),
-    ("EV degradation cost", "ev_degradation_cost"),
-    ("Carbon cost", "carbon_cost"),
-    ("Objective affine constant", "objective_affine_constant"),
-    ("Objective from solver", "objective_from_solver"),
-    ("Objective recomputed from solution", "objective_recomputed_from_solution"),
-    ("Objective shown in CBC log style", "objective_cbc_log_style"),
-]
-
-
-def appendix_reconciliation_dataframe(bd: dict[str, float], *, decimals: int = 4) -> pd.DataFrame:
-    """附录 / 补充材料用目标分项对账表（与 summarize_solution_costs 口径一致）。"""
-    rows = []
-    for label, key in _APPENDIX_RECONCILIATION_SPEC:
-        rows.append({"项": label, "数值（元）": f"{float(bd[key]):.{decimals}f}"})
-    return pd.DataFrame(rows)
-
-
-def write_appendix_reconciliation_files(
-    bd: dict[str, float],
-    *,
-    csv_path: Path,
-    md_path: Path,
-    decimals: int = 4,
-) -> tuple[Path, Path]:
-    """写出 UTF-8-sig CSV 与可直接粘贴进附录的 Markdown 表。"""
-    df = appendix_reconciliation_dataframe(bd, decimals=decimals)
-    csv_path.parent.mkdir(parents=True, exist_ok=True)
-    md_path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(csv_path, index=False, encoding="utf-8-sig")
-    lines = [
-        "# 目标函数分项对账表（附录 / 补充材料）",
-        "",
-        "与主模型 `p_1_5_ultimate.py` 中 `summarize_solution_costs` 及 `pulp.value(prob.objective)` 口径一致。",
-        "其中 **Objective affine constant** 为 PuLP 目标仿射表达式中的常数项；**Objective shown in CBC log style** 取 `pulp.value(prob.objective) - constant`，便于与 CBC 控制台 `Objective value` 对照。",
-        "",
-        "| 项 | 数值（元） |",
-        "| --- | ---: |",
-    ]
-    for _, r in df.iterrows():
-        item = str(r["项"]).replace("|", "\\|")
-        val = str(r["数值（元）"])
-        lines.append(f"| {item} | {val} |")
-    lines.append("")
-    md_path.write_text("\n".join(lines), encoding="utf-8")
-    return csv_path.resolve(), md_path.resolve()
 
 
 # =========================
@@ -794,7 +649,7 @@ def main() -> int:
     print(f"求解状态: {st}")
     if obj is not None and solve_ctx is not None:
         print(f"最优目标函数值（PuLP / 完整仿射目标）: {obj:.4f} 元")
-        bd = summarize_solution_costs(prob, data, solve_ctx)
+        bd = obr.summarize_coordinated_costs(prob, data, solve_ctx)
         ac = bd["objective_affine_constant"]
         print(
             f"CBC 控制台 Objective value 常与之差一个仿射常数项（本模型约 {ac:.4f} 元）: "
@@ -817,17 +672,32 @@ def main() -> int:
         print(f"  objective_affine_constant (PuLP): {bd['objective_affine_constant']:.4f}")
 
         if not args.no_reconciliation_export:
+            n_horizon = int(data["n"])
+            tables_dir = (_REPO_ROOT / "results" / "tables").resolve()
+            if n_horizon == 672:
+                fw = tables_dir / "objective_reconciliation_fullweek.csv"
+                obr.write_reconciliation_csv(fw, bd, decimals=6)
+                print(f"全周正式对账: {fw}", file=sys.stderr)
+                cmp_out = obr.try_write_fullweek_comparison(_REPO_ROOT)
+                if cmp_out:
+                    print(f"全周对比表: {cmp_out[0]}", file=sys.stderr)
+                    print(f"全周对比说明: {cmp_out[1]}", file=sys.stderr)
+            else:
+                print(
+                    f"提示: T={n_horizon}≠672，未写入 objective_reconciliation_fullweek.csv（请全周求解后再比对）。",
+                    file=sys.stderr,
+                )
             rec_csv = (
                 args.reconciliation_csv.resolve()
                 if args.reconciliation_csv is not None
-                else (_REPO_ROOT / "results" / "tables" / "objective_reconciliation_appendix.csv").resolve()
+                else (tables_dir / "objective_reconciliation_appendix.csv").resolve()
             )
             rec_md = (
                 args.reconciliation_md.resolve()
                 if args.reconciliation_md is not None
-                else (_REPO_ROOT / "results" / "tables" / "objective_reconciliation_appendix.md").resolve()
+                else (tables_dir / "objective_reconciliation_appendix.md").resolve()
             )
-            c_out, m_out = write_appendix_reconciliation_files(bd, csv_path=rec_csv, md_path=rec_md)
+            c_out, m_out = obr.write_appendix_reconciliation_files(bd, csv_path=rec_csv, md_path=rec_md)
             print(f"附录目标对账表: {c_out}", file=sys.stderr)
             print(f"附录目标对账表（Markdown）: {m_out}", file=sys.stderr)
 

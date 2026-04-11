@@ -22,7 +22,7 @@ I18N = {
     "Normal day": "正常日",
     "Low-irradiance day": "低辐照日",
     "Import-limited day": "进线受限日",
-    "Hour of Day": "时刻",
+    "Hour of Day": "日内时刻（h）",
     "Total Native Load (kW)": "总原生负荷（kW）",
     "PV Available (kW)": "光伏可用出力（kW）",
     "Typical-Day Load Profiles (24 h Aligned)": "典型日负荷对比（24小时对齐）",
@@ -61,6 +61,17 @@ def zh_fig_name(filename: str) -> str:
         return filename
     p = Path(filename)
     return f"{p.stem}_zh{p.suffix}"
+
+
+def stress_event_chart_title_zh(event_id: str, subtitle_key: str) -> str:
+    """图中标题：中文事件名 + 副标题（避免 STRESS_EVENT_2 等英文）。"""
+    prefix = {
+        "stress_event_1": "压力事件一（低辐照）",
+        "stress_event_2": "压力事件二（午间进线受限）",
+        "stress_event_3": "压力事件三（晚高峰进线受限）",
+    }.get(event_id, event_id.replace("_", " "))
+    return f"{prefix}：{tr(subtitle_key)}"
+
 
 PALETTE = {
     "load": "#16324f",
@@ -346,7 +357,10 @@ def main() -> None:
         )
         ax.set_ylabel(tr("Power (kW)"))
         ax.set_xlabel(tr("Time"))
-        ax.set_title(f"{event_id.upper()} {tr('Supply Pressure: Margin Between Demand and Available Supply')}", pad=10)
+        ax.set_title(
+            stress_event_chart_title_zh(event_id, "Supply Pressure: Margin Between Demand and Available Supply"),
+            pad=10,
+        )
         style_axes(ax)
         ax.tick_params(axis="x", rotation=20)
         ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.16), ncol=4)
@@ -371,7 +385,10 @@ def main() -> None:
         h1, l1 = ax1.get_legend_handles_labels()
         h2, l2 = ax2.get_legend_handles_labels()
         ax1.legend(h1 + h2, l1 + l2, loc="upper center", bbox_to_anchor=(0.5, 1.18), ncol=2)
-        ax1.set_title(f"{event_id.upper()} {tr('EV Support Potential: Online vs Power Bounds')}", pad=10)
+        ax1.set_title(
+            stress_event_chart_title_zh(event_id, "EV Support Potential: Online vs Power Bounds"),
+            pad=10,
+        )
         ax1.tick_params(axis="x", rotation=20)
         p = output_path(FIG_DIR, zh_fig_name(f"{event_id}_ev_support.png"))
         fig.savefig(p, dpi=300)

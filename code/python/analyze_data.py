@@ -54,6 +54,7 @@ I18N = {
     "Initial Energy Inflow": "EV 初始流入能量 (kWh)",
     "Required Departure Outflow": "EV 需求流出能量 (kWh)",
     "EV Energy Inflow/Outflow (7 Days)": "EV 能量流入/流出 (7天)",
+    "Count": "数量",
 }
 
 
@@ -371,7 +372,7 @@ def main() -> None:
     carbon_fig = save_fig(zh_fig_name("carbon_factor_7d.png"), tr("Grid Carbon Factor (7 Days)"), ylabel=tr("kgCO2/kWh"))
 
     bins = [-1e9, 0.5, 0.8, 1e9]
-    labels = ["low(<=0.5)", "mid(0.5,0.8]", "high(>0.8)"]
+    labels = ["低段(≤0.5)", "中段(0.5,0.8)", "高段(>0.8)"]
     seg = pd.cut(price_df["grid_buy_price_cny_per_kwh"], bins=bins, labels=labels)
     price_seg_tbl = (
         seg.value_counts()
@@ -390,7 +391,9 @@ def main() -> None:
         color=PALETTE["purple"],
         lw=2.2,
     )
-    ev_online_fig = save_fig(zh_fig_name("ev_online_count_7d.png"), tr("EV Online Count (7 Days)"), ylabel=tr("Count"))
+    ev_online_fig = save_fig(
+        zh_fig_name("ev_online_count_7d.png"), tr("EV Online Count (7 Days)"), ylabel=tr("Vehicle Count")
+    )
     # Paper-grade redraw: line + area emphasis.
     fig, ax = plt.subplots(figsize=FIGSIZE_PAPER, constrained_layout=True)
     x = ev_agg_df["timestamp"]
@@ -449,7 +452,7 @@ def main() -> None:
     ax_dn.plot(x, y_dis, lw=2.3, color="#bb5b45")
     ax_dn.set_ylabel(tr("Discharge Bound (kW)"))
     _style_time_axis_paper(ax_dn)
-    ax_dn.set_xlabel("Date")
+    ax_dn.set_xlabel(tr("Date"))
     ev_power_paper = output_path(FIG_DIR, zh_fig_name("ev_power_bounds_7d_paper.png"))
     fig.savefig(ev_power_paper, dpi=300)
     plt.close(fig)

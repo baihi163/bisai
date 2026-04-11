@@ -1,0 +1,13 @@
+﻿cost_item,value_yuan
+Grid import cost,38634.519277
+Grid export revenue,0.0
+PV curtailment penalty,0.0
+Load shed penalty,0.0
+Building shift penalty,338.7
+ESS degradation cost,369.390665
+EV degradation cost,124.846147
+Carbon cost,0.0
+Objective affine constant,11484.65
+Objective from solver,39467.456089
+Objective recomputed from solution,39467.456089
+Objective shown in CBC log style,27982.806089

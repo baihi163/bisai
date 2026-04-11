@@ -8,6 +8,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import math
 import sys
@@ -22,6 +23,17 @@ ROOT = Path(__file__).resolve().parents[3]
 INPUT_DIR = ROOT / "data" / "processed" / "final_model_inputs"
 OUT_DIR = ROOT / "results" / "problem1_baseline"
 INPUT_VALIDATION_REPORT = OUT_DIR / "baseline_input_validation_report.md"
+_PROBLEM1_DIR = ROOT / "code" / "python" / "problem_1"
+
+
+def _load_objective_reconciliation():
+    path = _PROBLEM1_DIR / "objective_reconciliation.py"
+    spec = importlib.util.spec_from_file_location("objective_reconciliation", path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"无法加载: {path}")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
 
 # EV 交流侧充电功率 → 电池储能增量效率（车载充电机 AC–DC 典型值，文献/工程常用约 0.90–0.95；
 # 输入数据未提供实测曲线，本 baseline 取中值 0.92 以保证物理一致性与可复现性。）
@@ -29,6 +41,23 @@ EV_CHARGE_EFFICIENCY = 0.92
 
 # 储能高价放电：购电价不低于全周购电价样本的该分位数时允许放电（默认 0.8 = 最贵约 20% 时段）。
 ESS_DISCHARGE_PRICE_QUANTILE = 0.8
+
+
+def _asset_degradation_cny_per_kwh() -> float:
+    p = ROOT / "data" / "raw" / "asset_parameters.csv"
+    if not p.is_file():
+        return 0.02
+    ap = pd.read_csv(p)
+    if not {"parameter", "value"}.issubset(ap.columns):
+        return 0.02
+    key = "stationary_battery_degradation_cost_cny_per_kwh_throughput"
+    hit = ap.loc[ap["parameter"].astype(str).str.strip() == key, "value"]
+    if hit.empty:
+        return 0.02
+    try:
+        return float(hit.iloc[0])
+    except (TypeError, ValueError):
+        return 0.02
 
 
 def _resolve_input_dir() -> Path:
@@ -61,6 +90,8 @@ def load_inputs(base: Path | None = None) -> dict[str, Any]:
     av = pd.read_csv(req("ev_availability_matrix.csv"))
     p_ch = pd.read_csv(req("ev_charge_power_limit_matrix_kw.csv"))
     p_dis = pd.read_csv(req("ev_discharge_power_limit_matrix_kw.csv"))
+    carbon = pd.read_csv(req("carbon_profile.csv"))
+    flex = pd.read_csv(req("flexible_load_params_clean.csv"))
 
     for name, df in [
         ("load_profile", load),
@@ -74,6 +105,8 @@ def load_inputs(base: Path | None = None) -> dict[str, Any]:
     ts = pd.to_datetime(load["timestamp"])
     if not ts.equals(pd.to_datetime(pv["timestamp"])):
         raise ValueError("load 与 pv 时间戳不一致")
+    if len(carbon) != len(load) or not ts.equals(pd.to_datetime(carbon["timestamp"])):
+        raise ValueError("carbon_profile 与 load 行数或时间戳不一致")
 
     # ESS 建模用字段（缺省则报错，不虚构）
     need_ess = [
@@ -104,12 +137,20 @@ def load_inputs(base: Path | None = None) -> dict[str, Any]:
     p_ch_mat = p_ch[ev_cols].to_numpy(dtype=np.float64)
     p_dis_mat = p_dis[ev_cols].to_numpy(dtype=np.float64)
 
+    carbon_kg = carbon["grid_carbon_kg_per_kwh"].to_numpy(dtype=np.float64)
+    unmet_penalty_max = float(flex["penalty_cny_per_kwh_not_served"].max())
+    carbon_price = 0.0
+    ess_deg_asset = _asset_degradation_cny_per_kwh()
+
     return {
         "dir": d,
         "load": load,
         "pv": pv,
         "price": price,
         "grid": grid,
+        "carbon_kg_per_kwh": carbon_kg,
+        "unmet_penalty_max_cny_per_kwh": unmet_penalty_max,
+        "carbon_price": carbon_price,
         "ess": ess,
         "ev_sessions": ev_sessions,
         "avail": avail,
@@ -119,6 +160,7 @@ def load_inputs(base: Path | None = None) -> dict[str, Any]:
         "n_ev": n_ev,
         "n_slots": 672,
         "ev_charge_efficiency": float(EV_CHARGE_EFFICIENCY),
+        "ess_degradation_cny_per_kwh": ess_deg_asset,
     }
 
 
@@ -338,7 +380,7 @@ def simulate_ess_rule(
     return ess_dis, ess_ch, e
 
 
-def run_baseline(data: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
+def run_baseline(data: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any], dict[str, float]]:
     dt = data["dt_hours"]
     T = data["n_slots"]
     load_df = data["load"]
@@ -351,6 +393,11 @@ def run_baseline(data: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame, dict
     p_ch_mat = data["p_ch_mat"]
     n_ev = data["n_ev"]
     eta_ev = float(data["ev_charge_efficiency"])
+    carbon_kg = data["carbon_kg_per_kwh"]
+    unmet_pen_max = float(data["unmet_penalty_max_cny_per_kwh"])
+    carbon_price = float(data["carbon_price"])
+    ess_deg = float(data.get("ess_degradation_cny_per_kwh", 0.02))
+    ev_deg_vec = ev_df["degradation_cost_cny_per_kwh_throughput"].to_numpy(dtype=np.float64)
 
     L = load_df["total_native_load_kw"].to_numpy(dtype=np.float64)
     pv_av = pv_df["pv_available_kw"].to_numpy(dtype=np.float64)
@@ -374,6 +421,14 @@ def run_baseline(data: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame, dict
     energy_at_departure = np.full(n_ev, np.nan, dtype=np.float64)
 
     rows: list[dict[str, Any]] = []
+
+    acc_grid_import_cost = 0.0
+    acc_grid_export_revenue = 0.0
+    acc_pv_curtail_penalty = 0.0
+    acc_load_shed_penalty = 0.0
+    acc_ess_deg = 0.0
+    acc_ev_deg = 0.0
+    acc_carbon = 0.0
 
     for t in range(T):
         a_row = avail[t]
@@ -405,6 +460,14 @@ def run_baseline(data: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame, dict
         curt = float(max(0.0, surplus_after))
 
         ev_e = ev_e + eta_ev * p_ev * dt
+
+        acc_grid_import_cost += float(buy[t]) * g_imp * dt
+        acc_grid_export_revenue += float(sell[t]) * g_exp * dt
+        acc_pv_curtail_penalty += 0.5 * curt * dt
+        acc_load_shed_penalty += unmet_pen_max * unmet * dt
+        acc_ess_deg += ess_deg * (ess_ch + ess_dis) * dt / 2.0
+        acc_ev_deg += float(np.sum(ev_deg_vec * p_ev * dt / 2.0))
+        acc_carbon += carbon_price * float(carbon_kg[t]) * g_imp * dt
 
         sid = int(slot_id[t])
         for j in range(n_ev):
@@ -469,7 +532,32 @@ def run_baseline(data: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame, dict
     ev_out = pd.DataFrame(ev_rows)
 
     kpis = summarize_kpis(ts_df, ev_out, pv_av, dt)
-    return ts_df, ev_out, kpis
+
+    objective_recomputed = (
+        acc_grid_import_cost
+        - acc_grid_export_revenue
+        + acc_carbon
+        + acc_pv_curtail_penalty
+        + acc_ess_deg
+        + 0.0
+        + acc_load_shed_penalty
+        + acc_ev_deg
+    )
+    recon: dict[str, float] = {
+        "grid_import_cost": acc_grid_import_cost,
+        "grid_export_revenue": acc_grid_export_revenue,
+        "pv_curtail_penalty": acc_pv_curtail_penalty,
+        "load_shed_penalty": acc_load_shed_penalty,
+        "building_shift_penalty": 0.0,
+        "ess_degradation_cost": acc_ess_deg,
+        "ev_degradation_cost": acc_ev_deg,
+        "carbon_cost": acc_carbon,
+        "objective_affine_constant": 0.0,
+        "objective_from_solver": objective_recomputed,
+        "objective_recomputed_from_solution": objective_recomputed,
+        "objective_cbc_log_style": objective_recomputed,
+    }
+    return ts_df, ev_out, kpis, recon
 
 
 def summarize_kpis(
@@ -619,7 +707,7 @@ def main() -> None:
             + "\n".join(in_errs)
         )
 
-    ts_df, ev_df, kpis = run_baseline(data)
+    ts_df, ev_df, kpis, recon = run_baseline(data)
 
     ts_df.to_csv(OUT_DIR / "baseline_timeseries_results.csv", index=False, encoding="utf-8-sig")
     ev_df.to_csv(OUT_DIR / "baseline_ev_session_summary.csv", index=False, encoding="utf-8-sig")
@@ -627,6 +715,18 @@ def main() -> None:
         json.dumps(kpis, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     write_readme(OUT_DIR / "baseline_readme.md")
+
+    obr = _load_objective_reconciliation()
+    fullweek_path = ROOT / "results" / "tables" / "objective_reconciliation_baseline_fullweek.csv"
+    if len(ts_df) == 672:
+        obr.write_reconciliation_csv(fullweek_path, recon, decimals=6)
+        print(f"已写入 baseline 全周对账: {fullweek_path}", flush=True)
+        merged = obr.try_write_fullweek_comparison(ROOT)
+        if merged:
+            print(f"已写入全周对比: {merged[0]}", flush=True)
+            print(f"已写入全周对比: {merged[1]}", flush=True)
+    else:
+        print(f"警告: 时段数 {len(ts_df)}≠672，跳过 objective_reconciliation_baseline_fullweek.csv", flush=True)
 
     print("=== baseline 非协同仿真完成 ===")
     print(f"输出目录: {OUT_DIR}")

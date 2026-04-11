@@ -1,0 +1,13 @@
+﻿cost_item,coordinated_model_yuan,baseline_yuan,delta_baseline_minus_coordinated_yuan,improvement_ratio
+Grid import cost,38634.519277,46304.527348,7670.008071,0.165643
+Grid export revenue,0.0,0.0,0.0,NA
+PV curtailment penalty,0.0,0.0,0.0,NA
+Load shed penalty,0.0,0.0,0.0,NA
+Building shift penalty,338.7,0.0,-338.7,NA
+ESS degradation cost,369.390665,12.54,-356.850665,-28.456991
+EV degradation cost,124.846147,93.31062,-31.535527,-0.337963
+Carbon cost,0.0,0.0,0.0,NA
+Objective affine constant,11484.65,0.0,-11484.65,NA
+Objective from solver,39467.456089,46410.377967,6942.921878,0.149598
+Objective recomputed from solution,39467.456089,46410.377967,6942.921878,0.149598
+Objective shown in CBC log style,27982.806089,46410.377967,18427.571878,0.397057

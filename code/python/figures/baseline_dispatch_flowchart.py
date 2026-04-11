@@ -119,7 +119,7 @@ def draw(save_path: Path | None = None) -> Path:
         y_read,
         BW,
         BH,
-        "读取外生序列与上时段末状态\n（负荷、光伏上限、电价、限额、SOC、各 EV 电量等）",
+        "读取外生序列与上时段末状态\n（负荷、光伏上限、电价、限额、储能 SOC、各车电量等）",
         8.5,
     )
     _proc_box(
@@ -128,7 +128,7 @@ def draw(save_path: Path | None = None) -> Path:
         y_ev,
         BW,
         BH,
-        "按规则计算 EV 交流充电功率\n（到站即充，无 V2B，不响应电价/光伏）",
+        "按规则计算电动汽车交流充电功率\n（到站即充，无车网反向送电，不响应电价/光伏）",
         8.5,
     )
     _proc_box(ax, XC, y_tot, BW, BH, "形成总需求：原生负荷 + EV 充电功率", 9)

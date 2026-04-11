@@ -65,7 +65,7 @@ def main() -> int:
     # ================= 图1：经济性对比柱状图 =================
     ax1 = fig.add_subplot(gs[0])
     costs = [46304.53, 38094.35]
-    labels = ["非协同基准 (Baseline)", "协同优化 (Optimized)"]
+    labels = ["非协同基准", "协同优化"]
     colors = ["#E74C3C", "#2ECC71"]
 
     bars = ax1.bar(labels, costs, color=colors, width=0.5)

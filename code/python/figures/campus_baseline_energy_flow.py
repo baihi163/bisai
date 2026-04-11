@@ -70,11 +70,11 @@ def draw(save_path: Path | None = None) -> Path:
     _box(ax, (bus_x, bus_y), bus_w, bus_h, "园区交流母线", fontsize=11)
     bus_cx, bus_cy = bus_x + bus_w / 2, bus_y + bus_h / 2
 
-    pv_cx, pv_cy, _, _ = _box(ax, (4.0, 5.85), 2.0, 0.55, "光伏（PV）", 10)
+    pv_cx, pv_cy, _, _ = _box(ax, (4.0, 5.85), 2.0, 0.55, "光伏发电", 10)
     grid_cx, grid_cy, _, _ = _box(ax, (0.45, 3.05), 1.35, 0.75, "大电网", 10)
     ess_cx, ess_cy, _, _ = _box(ax, (0.45, 1.05), 1.35, 0.75, "固定储能", 10)
     load_cx, load_cy, _, _ = _box(ax, (7.85, 4.35), 1.7, 0.65, "建筑原生负荷", 9)
-    ev_cx, ev_cy, _, _ = _box(ax, (7.85, 1.85), 1.7, 0.65, "电动汽车\n（EV）", 9)
+    ev_cx, ev_cy, _, _ = _box(ax, (7.85, 1.85), 1.7, 0.65, "电动汽车\n（车网侧）", 9)
 
     # 母线矩形边界（用于箭头端点）
     bus_left, bus_right = bus_x, bus_x + bus_w
@@ -149,9 +149,9 @@ def draw(save_path: Path | None = None) -> Path:
 
     # baseline 假设汇总
     note = (
-        "baseline 要点：① EV 仅从母线取电充电，不向母线放电（无 V2B）；"
+        "基准策略要点：① 电动汽车仅从母线取电充电，不向母线放电（无车网反向送电）；"
         "② 储能能量仅来自光伏盈余充电，不以购电充电；"
-        "③ 光伏优先满足建筑与 EV，再考虑储能、上网与弃光。"
+        "③ 光伏优先满足建筑与电动汽车，再考虑储能、上网与弃光。"
     )
     ax.text(
         5,
